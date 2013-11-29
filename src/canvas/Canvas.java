@@ -29,6 +29,7 @@ public class Canvas extends JPanel {
     private Image drawingBuffer;
     //set pen color
     private static Color color; 
+    private static int penSize;
     
     /**
      * Make a canvas.
@@ -122,8 +123,8 @@ public class Canvas extends JPanel {
         Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
         
         g.setColor(color);
+        g.setStroke(new BasicStroke(penSize));
         g.drawLine(x1, y1, x2, y2);
-        
         // IMPORTANT!  every time we draw on the internal drawing buffer, we
         // have to notify Swing to repaint this component on the screen.
         this.repaint();
@@ -185,13 +186,14 @@ public class Canvas extends JPanel {
                 JFrame window = new JFrame("Freehand Canvas");
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 window.setLayout(new BorderLayout());
-                
+                penSize=5;
                 JButton eraseButton = new JButton("ERASE");
                 eraseButton.setName("ERASE");
                 eraseButton.setPreferredSize(new Dimension (100,100));
                 eraseButton.addActionListener( new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
 						color=Color.WHITE;
+						penSize=30;
 					}
                 });
                 JButton drawButton = new JButton("DRAW");
@@ -200,6 +202,7 @@ public class Canvas extends JPanel {
                 drawButton.addActionListener( new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
 						color=Color.BLACK;
+						penSize=5;
 					}
                 });
                 
