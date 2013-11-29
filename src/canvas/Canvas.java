@@ -9,10 +9,13 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -24,7 +27,8 @@ import javax.swing.SwingUtilities;
 public class Canvas extends JPanel {
     // image where the user's drawing is stored
     private Image drawingBuffer;
-    
+    //set pen color
+    private static Color color; 
     
     /**
      * Make a canvas.
@@ -117,7 +121,7 @@ public class Canvas extends JPanel {
     private void drawLineSegment(int x1, int y1, int x2, int y2) {
         Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
         
-        g.setColor(Color.BLACK);
+        g.setColor(color);
         g.drawLine(x1, y1, x2, y2);
         
         // IMPORTANT!  every time we draw on the internal drawing buffer, we
@@ -181,8 +185,28 @@ public class Canvas extends JPanel {
                 JFrame window = new JFrame("Freehand Canvas");
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 window.setLayout(new BorderLayout());
+                
+                JButton eraseButton = new JButton("ERASE");
+                eraseButton.setName("ERASE");
+                eraseButton.setPreferredSize(new Dimension (100,100));
+                eraseButton.addActionListener( new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+						color=Color.WHITE;
+					}
+                });
+                JButton drawButton = new JButton("DRAW");
+                drawButton.setName("DRAW");
+                drawButton.setPreferredSize(new Dimension (100,100));
+                drawButton.addActionListener( new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+						color=Color.BLACK;
+					}
+                });
+                
                 Canvas canvas = new Canvas(800, 600);
                 window.add(canvas, BorderLayout.CENTER);
+                window.add(eraseButton, BorderLayout.SOUTH);
+                window.add(drawButton, BorderLayout.EAST);
                 window.pack();
                 window.setVisible(true);
             }
