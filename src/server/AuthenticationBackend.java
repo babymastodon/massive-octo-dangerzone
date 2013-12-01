@@ -12,7 +12,7 @@ public class AuthenticationBackend {
      * @return: whether the username is available.
      */
     public boolean login(String username){
-
+        return false;
     }
 
     /**

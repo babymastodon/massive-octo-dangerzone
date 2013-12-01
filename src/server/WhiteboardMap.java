@@ -18,7 +18,7 @@ public class WhiteboardMap {
      * @return the newly added WhiteboardStruct
      */
     public WhiteboardStruct newBoard(){
-
+        return null;
     }
 
     /**
@@ -28,6 +28,6 @@ public class WhiteboardMap {
      * @return the whiteboardStruct associated with id, or null
      */
     public WhiteboardStruct getBoard(int id){
-
+        return null;
     }
 }
