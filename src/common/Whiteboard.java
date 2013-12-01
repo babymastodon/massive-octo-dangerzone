@@ -31,7 +31,7 @@ public class Whiteboard {
      * @return an array of all the points in the modified line segment
      */
     public Point[] drawLine(Point point1, Point point2, Color color){
-
+        return null;
     }
 
     /**
@@ -51,7 +51,7 @@ public class Whiteboard {
      * @return the color at point
      */
     public Color getPixel(Point point){
-
+        return null;
     }
 
     /**
@@ -61,7 +61,7 @@ public class Whiteboard {
      * whiteboard, using the predefined type "TYPE_INT_RGB"
      */
     public BufferedImage makeBuffer(){
-
+        return null;
     }
 
     /**
