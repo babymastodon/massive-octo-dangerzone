@@ -9,21 +9,21 @@ import java.net.Socket;
  *  It is NOT thread-safe
  */
 public class ClientController {
-	
-	/**
-	 * Construct a ClientController that communicates to a server through
-	 * the given socket
-	 * @param s: socket between the client and the server
-	 */
-	public ClientController(Socket s){
-		
-	}
-	
-	/**
-	 * Execute the main loop.
-	 */
-	public void run(){
-		
-	}
+
+    /**
+     * Construct a ClientController that communicates to a server through
+     * the given socket
+     * @param s: socket between the client and the server
+     */
+    public ClientController(Socket s){
+
+    }
+
+    /**
+     * Execute the main loop.
+     */
+    public void run(){
+
+    }
 
 }

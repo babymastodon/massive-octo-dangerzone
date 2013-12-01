@@ -24,56 +24,56 @@ import common.ServerMessageListener;
  */
 public class ClientSocketHandler implements ClientMessageListener{
 
-	/**
-	 * Creates a handler that wraps around the given socket
-	 * @param s: the socket that is wrapped up.
-	 */
-	public ClientSocketHandler(Socket s){
-		
-	}
-	
-	/**
-	 * Use the given listener object to send server messages to the
-	 * client
-	 * @param l: the server message listener used for the messages
-	 */
-	public void setServerMessageListener(ServerMessageListener l){
-		
-	}
-	
-	@Override
-	public void login(String username) {
-		// TODO Auto-generated method stub
-		
-	}
+    /**
+     * Creates a handler that wraps around the given socket
+     * @param s: the socket that is wrapped up.
+     */
+    public ClientSocketHandler(Socket s){
 
-	@Override
-	public void connectToBoard(int id) {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void newBoard() {
-		// TODO Auto-generated method stub
-		
-	}
+    /**
+     * Use the given listener object to send server messages to the
+     * client
+     * @param l: the server message listener used for the messages
+     */
+    public void setServerMessageListener(ServerMessageListener l){
 
-	@Override
-	public void disconnectFromBoard() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void drawLine(Point p1, Point p2, Color color) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void login(String username) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void clientClose() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
+
+    @Override
+    public void connectToBoard(int id) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void newBoard() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void disconnectFromBoard() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void drawLine(Point p1, Point p2, Color color) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void clientClose() {
+        // TODO Auto-generated method stub
+
+    }
 }

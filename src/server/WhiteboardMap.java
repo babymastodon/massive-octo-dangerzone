@@ -6,28 +6,28 @@ package server;
  * synchronized.
  */
 public class WhiteboardMap {
-	/**
-	 * create empty collection
-	 */
-	public WhiteboardMap(){
-		
-	}
-	
-	/**
-	 * create a new WhiteboardStruct, add it to the map, and return it.
-	 * @return the newly added WhiteboardStruct
-	 */
-	public WhiteboardStruct newBoard(){
-		
-	}
+    /**
+     * create empty collection
+     */
+    public WhiteboardMap(){
 
-	/**
-	 * returns the WhiteboardStruct associated with the given id.
-	 * If there is no entry with that id, return null
-	 * @param id: the id of the whiteboardStruct we want
-	 * @return the whiteboardStruct associated with id, or null
-	 */
-	public WhiteboardStruct getBoard(int id){
-		
-	}
+    }
+
+    /**
+     * create a new WhiteboardStruct, add it to the map, and return it.
+     * @return the newly added WhiteboardStruct
+     */
+    public WhiteboardStruct newBoard(){
+
+    }
+
+    /**
+     * returns the WhiteboardStruct associated with the given id.
+     * If there is no entry with that id, return null
+     * @param id: the id of the whiteboardStruct we want
+     * @return the whiteboardStruct associated with id, or null
+     */
+    public WhiteboardStruct getBoard(int id){
+
+    }
 }

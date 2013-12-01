@@ -22,55 +22,55 @@ import common.Whiteboard;
  */
 public class ClientGUI implements ServerMessageListener{
 
-	/**
-	 * Use the provided listener object to send messages to the server.
-	 * @param l: the listener used to send messages.
-	 */
-	public void setClientMessageListener(ClientMessageListener l){
-		
-	}
-	
-	@Override
-	public void loginSuccess() {
-		// TODO Auto-generated method stub
-		
-	}
+    /**
+     * Use the provided listener object to send messages to the server.
+     * @param l: the listener used to send messages.
+     */
+    public void setClientMessageListener(ClientMessageListener l){
 
-	@Override
-	public void error(int code) {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void connectToBoardSuccess(int id, List<String> users,
-			Whiteboard data) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void loginSuccess() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void updatePixel(Point point, Color color) {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void updateUsers(List<String> users) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void error(int code) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void disconnectFromBoardSuccess() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void serverClose() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void connectToBoardSuccess(int id, List<String> users,
+            Whiteboard data) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void updatePixel(Point point, Color color) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void updateUsers(List<String> users) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void disconnectFromBoardSuccess() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void serverClose() {
+        // TODO Auto-generated method stub
+
+    }
 
 }

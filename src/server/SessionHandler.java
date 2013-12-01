@@ -21,57 +21,57 @@ import common.ServerMessageListener;
  */
 public class SessionHandler implements ClientMessageListener{
 
-	/**
-	 * Construct with the given parameters
-	 * @param auth
-	 * @param boards //check in about boards. The googledoc said the second parameter should be
-	 * BoardCollection boards
-	 */
-	public SessionHandler(AuthenticationBackend auth, WhiteboardMap boards){
-		
-	}
-	
-	/**
-	 * Use the given listener object to send messages to the client.
-	 * @param l: the listener object
-	 */
-	public void setServerMessageListener(ServerMessageListener l){
-		
-	}
-	
-	@Override
-	public void login(String username) {
-		// TODO Auto-generated method stub
-		
-	}
+    /**
+     * Construct with the given parameters
+     * @param auth
+     * @param boards //check in about boards. The googledoc said the second parameter should be
+     * BoardCollection boards
+     */
+    public SessionHandler(AuthenticationBackend auth, WhiteboardMap boards){
 
-	@Override
-	public void connectToBoard(int id) {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void newBoard() {
-		// TODO Auto-generated method stub
-		
-	}
+    /**
+     * Use the given listener object to send messages to the client.
+     * @param l: the listener object
+     */
+    public void setServerMessageListener(ServerMessageListener l){
 
-	@Override
-	public void disconnectFromBoard() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void drawLine(Point p1, Point p2, Color color) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void login(String username) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void clientClose() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
+
+    @Override
+    public void connectToBoard(int id) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void newBoard() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void disconnectFromBoard() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void drawLine(Point p1, Point p2, Color color) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void clientClose() {
+        // TODO Auto-generated method stub
+
+    }
 }

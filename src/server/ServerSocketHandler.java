@@ -31,63 +31,63 @@ import common.Whiteboard;
  */
 public class ServerSocketHandler implements ServerMessageListener{
 
-	/**
-	 * Creates a handler that wraps around the given socket.
-	 * Before being called here, the socket must be connected and open.
-	 * @param s: the socket that will be wrapped up.
-	 */
-	public ServerSocketHandler(Socket s){
-		
-	}
-	
-	/**
-	 * Use the given listener object to handle incoming messages from the client
-	 * @param l: the listener used to handle messages
-	 */
-	public void setClientMessageListener(ClientMessageListener l){
-		
-	}
-	
-	@Override
-	public void loginSuccess() {
-		// TODO Auto-generated method stub
-		
-	}
+    /**
+     * Creates a handler that wraps around the given socket.
+     * Before being called here, the socket must be connected and open.
+     * @param s: the socket that will be wrapped up.
+     */
+    public ServerSocketHandler(Socket s){
 
-	@Override
-	public void error(int code) {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void connectToBoardSuccess(int id, List<String> users,
-			Whiteboard data) {
-		// TODO Auto-generated method stub
-		
-	}
+    /**
+     * Use the given listener object to handle incoming messages from the client
+     * @param l: the listener used to handle messages
+     */
+    public void setClientMessageListener(ClientMessageListener l){
 
-	@Override
-	public void updatePixel(Point point, Color color) {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void updateUsers(List<String> users) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void loginSuccess() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void disconnectFromBoardSuccess() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void serverClose() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void error(int code) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void connectToBoardSuccess(int id, List<String> users,
+            Whiteboard data) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void updatePixel(Point point, Color color) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void updateUsers(List<String> users) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void disconnectFromBoardSuccess() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void serverClose() {
+        // TODO Auto-generated method stub
+
+    }
 }
