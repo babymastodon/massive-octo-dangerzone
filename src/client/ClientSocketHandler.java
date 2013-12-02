@@ -137,8 +137,12 @@ public class ClientSocketHandler implements ClientMessageListener{
 
     @Override
     public synchronized void clientClose() {
-        // TODO Auto-generated method stub
+        if (clientInterfaceOpen){
+            assert listener != null;
 
+            this.clientInterfaceOpen = false;
+            socketWrapper.close();
+        }
     }
 
     /**
