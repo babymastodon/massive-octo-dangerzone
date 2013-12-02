@@ -20,7 +20,18 @@ public class Color {
         this.blue = 255;
     }
 
+    /**
+     * Create color with given RGB values.
+     *
+     * @param r integer from 0 to 255
+     * @param g integer from 0 to 255
+     * @param b integer from 0 to 255
+     */
     public Color(int r, int g, int b){
+        assert r >= 0 && r <= 255;
+        assert g >= 0 && g <= 255;
+        assert b >= 0 && b <= 255;
+
         this.red = r;
         this.green = g;
         this.blue = b;

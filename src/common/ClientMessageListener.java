@@ -1,7 +1,5 @@
 package common;
 
-import java.awt.Point;
-
 /**
  * Callback functions to be executed for events originating in the client
  * It is NOT guaranteed to be threadsafe.

@@ -1,7 +1,5 @@
 package server;
 
-import java.awt.Point;
-
 import common.*;
 import static common.SocketState.*;
 
@@ -35,6 +33,7 @@ public class SessionHandler implements ClientMessageListener{
     private WhiteboardStruct connectedBoardStruct;
 
     private SocketState state;
+    private boolean clientInterfaceOpen;
 
     /**
      * Construct with the given parameters
@@ -48,13 +47,16 @@ public class SessionHandler implements ClientMessageListener{
         this.connectedBoardStruct = null;
         this.state = NOT_LOGGED_IN;
         this.username = null;
+        this.clientInterfaceOpen = true;
     }
 
     /**
      * Use the given listener object to send messages to the client.
+     * Listener should not already be set.
      * @param listener: the listener object
      */
     public void setServerMessageListener(ServerMessageListener listener){
+        assert this.listener == null;
         this.listener = listener;
     }
 
@@ -63,19 +65,21 @@ public class SessionHandler implements ClientMessageListener{
      */
     @Override
     public void login(String username) {
-        assert listener != null;
-        assert state == NOT_LOGGED_IN;
+        if (clientInterfaceOpen){
+            assert listener != null;
+            assert state == NOT_LOGGED_IN;
 
-        this.username = username;
+            this.username = username;
 
-        if (auth.login(username)){
-            // Successful login
-            state = NOT_CONNECTED;
-            listener.loginSuccess();
-        } else {
-            // Failed login
-            // state will remain == NOT_LOGGED_IN
-            listener.error(100);
+            if (auth.login(username)){
+                // Successful login
+                state = NOT_CONNECTED;
+                listener.loginSuccess();
+            } else {
+                // Failed login
+                // state will remain == NOT_LOGGED_IN
+                listener.error(100);
+            }
         }
     }
 
@@ -84,17 +88,20 @@ public class SessionHandler implements ClientMessageListener{
      */
     @Override
     public void connectToBoard(int id) {
-        assert listener != null;
-        assert state == NOT_CONNECTED;
+        if (clientInterfaceOpen){
+            assert listener != null;
+            assert state == NOT_CONNECTED;
 
-        connectedBoardStruct = boards.getBoard(id);
+            connectedBoardStruct = boards.getBoard(id);
 
-        if (connectedBoardStruct == null){
-            // Board does not exist
-            listener.error(200);
-        } else {
-            // Board does exist
-            _connectToBoard();
+            if (connectedBoardStruct == null){
+                // Board does not exist
+                // state will remain == NOT_CONNECTED
+                listener.error(200);
+            } else {
+                // Board does exist
+                _connectToBoard();
+            }
         }
     }
 
@@ -103,11 +110,13 @@ public class SessionHandler implements ClientMessageListener{
      */
     @Override
     public void newBoard() {
-        assert listener != null;
-        assert state == NOT_CONNECTED;
+        if (clientInterfaceOpen){
+            assert listener != null;
+            assert state == NOT_CONNECTED;
 
-        connectedBoardStruct = boards.newBoard();
-        _connectToBoard();
+            connectedBoardStruct = boards.newBoard();
+            _connectToBoard();
+        }
     }
 
     /**
@@ -115,10 +124,12 @@ public class SessionHandler implements ClientMessageListener{
      */
     @Override
     public void disconnectFromBoard() {
-        assert listener != null;
-        assert state == CONNECTED;
+        if (clientInterfaceOpen){
+            assert listener != null;
+            assert state == CONNECTED;
 
-        _disconnectFromBoard();
+            _disconnectFromBoard();
+        }
     }
 
     /**
@@ -126,19 +137,21 @@ public class SessionHandler implements ClientMessageListener{
      */
     @Override
     public void drawLine(Point p1, Point p2, Color color) {
-        assert listener != null;
-        assert state == CONNECTED;
+        if (clientInterfaceOpen){
+            assert listener != null;
+            assert state == CONNECTED;
 
-        synchronized(connectedBoardStruct){
-            // draw the line on the whiteboard
-            Whiteboard board = connectedBoardStruct.getWhiteboard();
-            Point[] changedPoints = board.drawLine(
-                    p1, p2, color);
+            synchronized(connectedBoardStruct){
+                // draw the line on the whiteboard
+                Whiteboard board = connectedBoardStruct.getWhiteboard();
+                Point[] changedPoints = board.drawLine(
+                        p1, p2, color);
 
-            // notify clients of new pixel values
-            for (ServerMessageListener l: connectedBoardStruct.getListeners()){
-                for (Point p: changedPoints){
-                    l.updatePixel(p, board.getPixel(p));
+                // notify clients of new pixel values
+                for (ServerMessageListener l: connectedBoardStruct.getListeners()){
+                    for (Point p: changedPoints){
+                        l.updatePixel(p, board.getPixel(p));
+                    }
                 }
             }
         }
@@ -149,21 +162,26 @@ public class SessionHandler implements ClientMessageListener{
      */
     @Override
     public void clientClose() {
-        assert listener != null;
+        if (clientInterfaceOpen){
+            assert listener != null;
 
-        if (state == CONNECTED){
-            // If currently connected to a board, disconnect from it
-            _disconnectFromBoard();
+            if (state == CONNECTED){
+                // If currently connected to a board, disconnect from it
+                _disconnectFromBoard();
+            }
+
+            if (state != NOT_LOGGED_IN){
+                // If logged in, then log out
+                assert username != null;
+                auth.logout(username);
+            }
+
+            // notify the server listener to close
+            listener.serverClose();
+
+            // stop responding to all client messages
+            clientInterfaceOpen = false;
         }
-
-        if (state != NOT_LOGGED_IN){
-            // If logged in, then log out
-            assert username != null;
-            auth.logout(username);
-        }
-
-        // Notify the server listener to close
-        listener.serverClose();
     }
 
 

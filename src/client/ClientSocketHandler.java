@@ -1,11 +1,10 @@
 package client;
 
-import java.awt.Point;
-import java.net.Socket;
+import java.util.*;
+import java.io.*;
 
-import common.ClientMessageListener;
-import common.Color;
-import common.ServerMessageListener;
+import common.*;
+import static common.SocketState.*;
 
 /**
  * Wraps around a socket, converting client events (function calls) into
@@ -14,72 +13,247 @@ import common.ServerMessageListener;
  * responses that arrive from the server.
  * It keeps track of the system state and asserts that messages
  * are only sent or received in the right  states.
- * If a socket throws an error, calls ServerMessageListener.serverClose()
- * Call clientClose() instead of throwing exceptions.
+ * If a socket throws an error while writing to the stream, calls ServerMessageListener.serverClose()
+ * Call clientClose() if error while reading from the stream.
+ *
  * Thread safety: 
- * The public interface is synchronized, so functions block
- * as long as necessary to successfully write to the socket.
- * Arriving messages are parsed and callback functions are executed
- * in a background thread.
+ * The public interface is synchronized.
+ * Code in the SocketWrapperListener (which gets run on a single, separate thread)
+ *      locks the ServerSocketHandler object before changing the state.
+ *      (The ServerMessageListener isn't locked, because it is never touched
+ *      by the public interface)
  */
 public class ClientSocketHandler implements ClientMessageListener{
 
-    /**
-     * Creates a handler that wraps around the given socket
-     * @param s: the socket that is wrapped up.
-     */
-    public ClientSocketHandler(Socket s){
+    private final SocketWrapper socketWrapper;
+    private ServerMessageListener listener;
 
-    }
+    private SocketState state;
+    private boolean clientInterfaceOpen;
 
     /**
-     * Use the given listener object to send server messages to the
-     * client
-     * @param l: the server message listener used for the messages
+     * Creates a handler that delegates to the given SocketWrapper.
+     *
+     * Automatically sets this as the SocketWrapper's listener.
+     *
+     * @param s: the socketWrapper to be used.
      */
-    public void setServerMessageListener(ServerMessageListener l){
+    public ClientSocketHandler(SocketWrapper s){
+        this.socketWrapper = s;
+        this.clientInterfaceOpen = true;
+        this.state = NOT_LOGGED_IN;
 
+        // Attach a listener to the socket wrapper events
+        this.socketWrapper.setSocketWrapperListener(new SocketWrapperListener(){
+            public void onReadLine(String line){
+                _onReadLine(line);
+            }
+            public void onReadError(IOException e){
+                // do nothing, since onReadFinish will get called
+            }
+            public void onReadFinish(){
+                _serverClose();
+            }
+            public void onWriteError(IOException e){
+                clientClose();
+            }
+        });
     }
 
     /**
-     * Start the background listener thread;
+     * Use the given listener object handle incoming messages from the server.
+     * Listener should not already be set.
+     *
+     * @param l: the listener for the messages
      */
-    public void start(){
+    public synchronized void setServerMessageListener(ServerMessageListener l){
+        assert this.listener == null;
+        this.listener = l;
     }
 
     @Override
-    public void login(String username) {
-        // TODO Auto-generated method stub
+    public synchronized void login(String username) {
+        if (clientInterfaceOpen){
+            assert listener != null;
+            assert state == NOT_LOGGED_IN;
 
+            state = LOGIN_PENDING;
+            socketWrapper.writeLine("l " + username);
+        }
     }
 
     @Override
-    public void connectToBoard(int id) {
-        // TODO Auto-generated method stub
+    public synchronized void connectToBoard(int id) {
+        if (clientInterfaceOpen){
+            assert listener != null;
+            assert state == NOT_CONNECTED;
 
+            state = CONNECT_PENDING;
+            socketWrapper.writeLine("c " + id);
+        }
     }
 
     @Override
-    public void newBoard() {
-        // TODO Auto-generated method stub
+    public synchronized void newBoard() {
+        if (clientInterfaceOpen){
+            assert listener != null;
+            assert state == NOT_CONNECTED;
 
+            state = CONNECT_PENDING;
+            socketWrapper.writeLine("n");
+        }
     }
 
     @Override
-    public void disconnectFromBoard() {
-        // TODO Auto-generated method stub
+    public synchronized void disconnectFromBoard() {
+        if (clientInterfaceOpen){
+            assert listener != null;
+            assert state == CONNECTED;
 
+            state = DISCONNECT_PENDING;
+            socketWrapper.writeLine("d");
+        }
     }
 
     @Override
-    public void drawLine(Point p1, Point p2, Color color) {
-        // TODO Auto-generated method stub
+    public synchronized void drawLine(Point p1, Point p2, Color color) {
+        if (clientInterfaceOpen){
+            assert listener != null;
+            assert state == CONNECTED;
 
+            // state will remain CONNECTED
+            StringBuilder b = new StringBuilder();
+            b.append("dr ");
+            b.append(p1.getX()).append(" ");
+            b.append(p1.getY()).append(" ");
+            b.append(p2.getX()).append(" ");
+            b.append(p2.getY()).append(" ");
+            b.append(color.getRed()).append(" ");
+            b.append(color.getGreen()).append(" ");
+            b.append(color.getBlue());
+            socketWrapper.writeLine(b.toString());
+        }
     }
 
     @Override
-    public void clientClose() {
-        // TODO Auto-generated method stub
+    public synchronized void clientClose() {
+        if (clientInterfaceOpen){
+            assert listener != null;
 
+            this.clientInterfaceOpen = false;
+            socketWrapper.close();
+        }
+    }
+
+    /**
+     * Given the input string message, parse the message and execute
+     * it upon the ServerMessageListener.
+     */
+    private void _onReadLine(String line){
+        String[] tokens = line.split(" ");
+        try{
+            // NOTE: the state assertions are not thread-safe
+            // but they get disabled in production anyway.
+            switch(tokens[0]){
+                case "ls":
+                    // update-pixel
+                    assert state == LOGIN_PENDING;
+                    assert tokens.length == 1;
+                    _changeState(NOT_CONNECTED);
+                    listener.loginSuccess();
+                    break;
+                case "p":
+                    // update-pixel
+                    assert state == CONNECTED || state == DISCONNECT_PENDING;
+                    assert tokens.length == 6;
+                    Point p = new Point(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
+                    Color c = new Color(Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5]));
+                    listener.updatePixel(p, c);
+                    break;
+                case "u":
+                    // update-users
+                    assert state == CONNECTED || state == DISCONNECT_PENDING;
+                    assert tokens.length == 2;
+                    listener.updateUsers(Arrays.asList(tokens[1].split(",")));
+                    break;
+                case "e":
+                    // error
+                    assert state == LOGIN_PENDING || state == CONNECT_PENDING;
+                    assert tokens.length == 2;
+                    int code = Integer.parseInt(tokens[1]);
+                    switch(code){
+                        case 100:
+                            _changeState(NOT_LOGGED_IN);
+                            break;
+                        case 200:
+                            _changeState(NOT_CONNECTED);
+                            break;
+                        default:
+                            throw new RuntimeException("Unrecognized error code: " + code);
+                    }
+                    listener.error(code);
+                    break;
+                case "ds":
+                    // disconnect-from-board-success
+                    assert state == DISCONNECT_PENDING;
+                    assert tokens.length == 1;
+                    _changeState(NOT_CONNECTED);
+                    listener.disconnectFromBoardSuccess();
+                    break;
+                case "cs":
+                    // connect-to-board-success
+                    assert state == CONNECT_PENDING;
+                    assert tokens.length == 4;
+                    int id = Integer.parseInt(tokens[1]);
+                    List<String> usernames = Arrays.asList(tokens[2].split(","));
+                    Whiteboard board = _parseWhiteboard(tokens[3]);
+                    _changeState(CONNECTED);
+                    listener.connectToBoardSuccess(id, usernames, board);
+                    break;
+                default:
+                    throw new RuntimeException("Unrecognized message: " + line);
+            }
+        } catch (Exception e){
+            // Print the error, because there is a bug
+            // if the execution ends up here
+            e.printStackTrace();
+            _serverClose();
+        }
+    }
+
+    /**
+     * Change the state of the ClientSocketHandler in a thread-safe manner.
+     */
+    private synchronized void _changeState(SocketState newState){
+        state = newState;
+    }
+
+    /**
+     * Send the "close" message to the ServerMessageListener.
+     *
+     * This gets executed whenever there is an error reading a
+     * message from the socket, or whenever the message is malformed.
+     * Should only be executed from the SocketWrapperListener thread.
+     */
+    private void _serverClose(){
+        assert listener != null;
+        listener.serverClose();
+    }
+
+    private Whiteboard _parseWhiteboard(String data){
+        String[] numbers = data.split(",");
+        Whiteboard board = new Whiteboard();
+
+        for (int y=0; y<Whiteboard.HEIGHT; y++){
+            for (int x=0; x<Whiteboard.WIDTH; x++){
+                int baseIndex = (y*Whiteboard.WIDTH + x)*3;
+                int red = Integer.parseInt(numbers[baseIndex]);
+                int green = Integer.parseInt(numbers[baseIndex+1]);
+                int blue = Integer.parseInt(numbers[baseIndex+2]);
+                board.setPixel(new Point(x,y), new Color(red, green, blue));
+            }
+        }
+
+        return board;
     }
 }
