@@ -1,12 +1,8 @@
 package client;
 
-import java.awt.Point;
 import java.util.List;
 
-import common.ClientMessageListener;
-import common.Color;
-import common.ServerMessageListener;
-import common.Whiteboard;
+import common.*;
 
 /**
  * It is not thread-safe.

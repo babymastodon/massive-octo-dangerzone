@@ -3,6 +3,8 @@ package server;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import common.*;
+
 /**
  * Listens for incoming client connections. For each new client
  * connection, it constructs a new ServerSocketHandler, a new SessionController,
@@ -44,8 +46,11 @@ public class ServerController {
                 return;
             }
 
+            // Construct the socketWrapper that runs the background thread
+            SocketWrapper socketWrapper = new SocketWrapper(socket);
+
             // Construct a SocketHandler to interpret the socket protocol
-            ServerSocketHandler socketHandler = new ServerSocketHandler(socket);
+            ServerSocketHandler socketHandler = new ServerSocketHandler(socketWrapper);
             // Construct the SessionHandler to attach to the socket
             SessionHandler sessionHandler = new SessionHandler(auth, map);
 
@@ -53,8 +58,8 @@ public class ServerController {
             socketHandler.setClientMessageListener(sessionHandler);
             sessionHandler.setServerMessageListener(socketHandler);
 
-            // Start the socket handler thread
-            socketHandler.start();
+            // Start the socket wrapper thread
+            socketWrapper.start();
         }
     }
 }

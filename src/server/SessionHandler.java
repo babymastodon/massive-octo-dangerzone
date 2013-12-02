@@ -1,7 +1,5 @@
 package server;
 
-import java.awt.Point;
-
 import common.*;
 import static common.SocketState.*;
 
@@ -54,9 +52,11 @@ public class SessionHandler implements ClientMessageListener{
 
     /**
      * Use the given listener object to send messages to the client.
+     * Listener should not already be set.
      * @param listener: the listener object
      */
     public void setServerMessageListener(ServerMessageListener listener){
+        assert this.listener == null;
         this.listener = listener;
     }
 
@@ -96,6 +96,7 @@ public class SessionHandler implements ClientMessageListener{
 
             if (connectedBoardStruct == null){
                 // Board does not exist
+                // state will remain == NOT_CONNECTED
                 listener.error(200);
             } else {
                 // Board does exist
