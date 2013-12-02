@@ -4,11 +4,10 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 public class Whiteboard {
-    public final int WIDTH;
-    public final int HEIGHT;
-    public Whiteboard(int width, int height){
-        this.WIDTH = width;
-        this.HEIGHT = height;
+    public static final int WIDTH = 800;
+    public static final int HEIGHT = 600;
+
+    public Whiteboard(){
     }
 
     /**

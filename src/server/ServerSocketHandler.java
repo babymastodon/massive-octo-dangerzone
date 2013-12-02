@@ -48,6 +48,12 @@ public class ServerSocketHandler implements ServerMessageListener{
 
     }
 
+    /**
+     * Start the background listener thread;
+     */
+    public void start(){
+    }
+
     @Override
     public void loginSuccess() {
         // TODO Auto-generated method stub

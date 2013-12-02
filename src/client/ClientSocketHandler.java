@@ -41,6 +41,12 @@ public class ClientSocketHandler implements ClientMessageListener{
 
     }
 
+    /**
+     * Start the background listener thread;
+     */
+    public void start(){
+    }
+
     @Override
     public void login(String username) {
         // TODO Auto-generated method stub
