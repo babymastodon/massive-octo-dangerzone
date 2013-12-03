@@ -11,6 +11,7 @@ import common.Whiteboard;
  * 
  * It is NOT thread-safe. Clients should lock this object before accessing
  * or modifying any of its attributes.
+ *
  */
 public class WhiteboardStruct {
     private Whiteboard board;
