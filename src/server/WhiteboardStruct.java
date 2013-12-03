@@ -25,8 +25,9 @@ public class WhiteboardStruct {
      * @param listeners: list of listeners for the board
      * @param id: the id number of the board.
      */
-    public WhiteboardStruct(Whiteboard board, List<ServerMessageListener> listeners, int id){
+    public WhiteboardStruct(Whiteboard board, List<String> users, List<ServerMessageListener> listeners, int id){
         this.board = board;
+        this.users = users;
         this.listeners = listeners;
         this.id = id;
     }

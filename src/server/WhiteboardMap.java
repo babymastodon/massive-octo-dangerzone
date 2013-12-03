@@ -27,8 +27,9 @@ public class WhiteboardMap {
         int id = structs.size();
         Whiteboard board = new Whiteboard();
         List<ServerMessageListener> listeners = new ArrayList<ServerMessageListener>();
+        List<String> users = new ArrayList<String>();
 
-        WhiteboardStruct s = new WhiteboardStruct(board, listeners, id);
+        WhiteboardStruct s = new WhiteboardStruct(board, users, listeners, id);
         structs.add(s);
         return s;
     }
