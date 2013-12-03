@@ -3,7 +3,7 @@ package client;
 import java.util.List;
 
 import common.*;
-
+//
 /**
  * It is not thread-safe.
  * Stores the list of all usernames currently connected to the internal
