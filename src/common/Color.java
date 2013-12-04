@@ -82,4 +82,8 @@ public class Color {
     public int hashCode(){
         return (this.red << 16) + (this.green << 8) + this.blue;
     }
+
+    public String toString(){
+        return "Color(" + red + "," + green + "," + blue + ")";
+    }
 }

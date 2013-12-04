@@ -129,15 +129,9 @@ public class ServerSocketHandler implements ServerMessageListener{
             for (int y=0; y<Whiteboard.HEIGHT; y++){
                 for (int x=0; x<Whiteboard.WIDTH; x++){
                     Color c = data.getPixel(new Point(x, y));
-                    b.append(c.getRed()).append(",");
-                    b.append(c.getGreen()).append(",");
-                    b.append(c.getBlue());
-                    if (x != Whiteboard.WIDTH-1){
-                        b.append(",");
-                    }
-                }
-                if (y != Whiteboard.HEIGHT-1){
-                    b.append(",");
+                    b.append(byteToHex(c.getRed()));
+                    b.append(byteToHex(c.getGreen()));
+                    b.append(byteToHex(c.getBlue()));
                 }
             }
             socketWrapper.writeLine(b.toString());
@@ -276,5 +270,30 @@ public class ServerSocketHandler implements ServerMessageListener{
     private void _clientClose(){
         assert listener != null;
         listener.clientClose();
+    }
+
+
+    /**
+     * Convert an integer from 0-255 into a 2-byte hex string
+     */
+    private String byteToHex(int num){
+        assert num >= 0;
+        assert num <= 255;
+        char msb = nibbleToHex((num & 0xf0) >> 4);
+        char lsb = nibbleToHex(num & 0xf);
+        return new String(new char[]{msb, lsb});
+    }
+
+    /**
+     * Convert an integer from 0-16 into a 1-byte hex character.
+     */
+    private char nibbleToHex(int nibble){
+        if (nibble <= 9){
+            return (char)(nibble + '0');
+        }
+        if (nibble <= 15){
+            return (char)(nibble - 10 + 'a');
+        }
+        throw new RuntimeException("Cannot convert to hex: " + nibble);
     }
 }

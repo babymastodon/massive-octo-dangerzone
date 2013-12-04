@@ -61,4 +61,9 @@ public class Point{
     public int hashCode(){
         return this.x*123 + this.y*6789;
     }
+
+
+    public String toString(){
+        return "Point(" + x + "," + y + ")";
+    }
 }

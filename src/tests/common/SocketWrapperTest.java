@@ -2,6 +2,7 @@ package tests.common;
 
 import org.junit.Test;
 
+import org.mockito.verification.VerificationMode;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -14,7 +15,12 @@ public class SocketWrapperTest {
     /**
      * SocketWrapper tests
      */
+
+    // Port for TCP communication
     public static final int PORT = 1425;
+
+    // mockito verify delay, wait for up to 2 seconds
+    public static final VerificationMode delay = timeout(2000);
 
 
     /**
@@ -39,28 +45,20 @@ public class SocketWrapperTest {
 
         // Test sending and receiving
         s1.writeLine("Line1");
-        delay();
-        verify(l2).onReadLine("Line1");
+        verify(l2, delay).onReadLine("Line1");
 
         s2.writeLine("Line2");
-        delay();
-        verify(l1).onReadLine("Line2");
+        verify(l1, delay).onReadLine("Line2");
 
 
         // Test closing and onReadError()
         s1.close();
-        delay();
-        verify(l2).onReadFinish();
-        verify(l1).onReadFinish();
+        verify(l2, delay).onReadFinish();
+        verify(l1, delay).onReadFinish();
 
 
         // Test write error
         s1.writeLine("Fail");
-        delay();
-        verify(l1).onWriteError(any(IOException.class));
-    }
-
-    private void delay() throws Exception{
-        Thread.sleep(100);
+        verify(l1, delay).onWriteError(any(IOException.class));
     }
 }

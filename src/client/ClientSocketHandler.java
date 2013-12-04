@@ -221,6 +221,7 @@ public class ClientSocketHandler implements ClientMessageListener{
         }
     }
 
+
     /**
      * Change the state of the ClientSocketHandler in a thread-safe manner.
      */
@@ -241,19 +242,42 @@ public class ClientSocketHandler implements ClientMessageListener{
     }
 
     private Whiteboard _parseWhiteboard(String data){
-        String[] numbers = data.split(",");
         Whiteboard board = new Whiteboard();
 
         for (int y=0; y<Whiteboard.HEIGHT; y++){
             for (int x=0; x<Whiteboard.WIDTH; x++){
-                int baseIndex = (y*Whiteboard.WIDTH + x)*3;
-                int red = Integer.parseInt(numbers[baseIndex]);
-                int green = Integer.parseInt(numbers[baseIndex+1]);
-                int blue = Integer.parseInt(numbers[baseIndex+2]);
+                int baseIndex = (y*Whiteboard.WIDTH + x)*3*2;
+                int red = hexToByte(data.charAt(baseIndex), data.charAt(baseIndex+1));
+                int green = hexToByte(data.charAt(baseIndex+2), data.charAt(baseIndex+3));
+                int blue = hexToByte(data.charAt(baseIndex+4), data.charAt(baseIndex+5));
                 board.setPixel(new Point(x,y), new Color(red, green, blue));
             }
         }
 
         return board;
+    }
+
+    /**
+     * Convert a two-byte hex string (msb, lsb) into
+     * an integer.
+     */
+    private int hexToByte(char msb, char lsb){
+        return (hexToNibble(msb) << 4) + hexToNibble(lsb);
+    }
+
+    /**
+     * Convert a one-byte hex character into an integer.
+     */
+    private int hexToNibble(char hexChar){
+        if (hexChar >= '0' && hexChar <= '9'){
+            return hexChar - '0';
+        }
+        if (hexChar >= 'a' && hexChar <= 'f'){
+            return hexChar - 'a' + 10;
+        }
+        if (hexChar >= 'A' && hexChar <= 'F'){
+            return hexChar - 'A' + 10;
+        }
+        throw new RuntimeException("Invalid Hex Character: " + hexChar);
     }
 }

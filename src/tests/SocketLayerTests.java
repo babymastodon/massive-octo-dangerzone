@@ -2,6 +2,8 @@ package tests;
 
 import org.junit.*;
 
+import org.mockito.*;
+import org.mockito.verification.VerificationMode;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -22,7 +24,12 @@ public class SocketLayerTests {
      * Call a function on one handler, the response
      * should arrive on the other one.
      */
+
+    // Port for TCP communication
     public static final int PORT = 1425;
+
+    // mockito verify delay, wait for up to 2 seconds
+    public static final VerificationMode delay = timeout(2000);
 
     
     private ServerSocket ss;
@@ -66,7 +73,6 @@ public class SocketLayerTests {
         ssw.close();
         csw.close();
         ss.close();
-        delay();
     }
 
     /**
@@ -75,28 +81,25 @@ public class SocketLayerTests {
     @Test
     public void testLoginSuccess() {
         sh.loginSuccess();
-        delay();
-        verify(sl).loginSuccess();
+        verify(sl, delay).loginSuccess();
     }
 
 
     /**
-     * Test error message = "e <code>"
+     * Test error message
      */
     @Test
     public void testError() {
         sh.error(100);
-        delay();
-        verify(sl).error(100);
+        verify(sl, delay).error(100);
 
         sh.error(200);
-        delay();
-        verify(sl).error(200);
+        verify(sl, delay).error(200);
     }
 
 
     /**
-     * Test ConnectToBoardSuccess = "cs <id> <users> <data>"
+     * Test ConnectToBoardSuccess message
      */
     @Test
     public void testConnectToBoardSuccess() {
@@ -106,15 +109,6 @@ public class SocketLayerTests {
         board.setPixel(new Point(0,1), new Color(0,255,255));
 
         sh.connectToBoardSuccess(id, users, board);
-        delay();
-        verify(sl).connectToBoardSuccess(id, users, board);
-    }
-
-
-    private void delay(){
-        try{
-            Thread.sleep(100);
-        } catch (Exception e){
-        }
+        verify(sl, delay).connectToBoardSuccess(123, users, board);
     }
 }
