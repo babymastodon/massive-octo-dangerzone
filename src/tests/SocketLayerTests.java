@@ -1,4 +1,4 @@
-package tests.server;
+package tests;
 
 import org.junit.*;
 
