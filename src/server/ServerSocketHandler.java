@@ -162,7 +162,7 @@ public class ServerSocketHandler implements ServerMessageListener{
             assert state == CONNECTED || state == DISCONNECT_PENDING;
 
             StringBuilder b = new StringBuilder();
-            b.append("p ");
+            b.append("u ");
             for (int i=0; i<users.size(); i++){
                 b.append(users.get(i));
                 if (i != users.size()-1){
@@ -285,7 +285,7 @@ public class ServerSocketHandler implements ServerMessageListener{
     }
 
     /**
-     * Convert an integer from 0-16 into a 1-byte hex character.
+     * Convert an integer from 0-16 into a 1-byte character.
      */
     private char nibbleToHex(int nibble){
         if (nibble <= 9){

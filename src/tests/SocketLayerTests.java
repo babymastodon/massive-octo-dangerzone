@@ -111,4 +111,49 @@ public class SocketLayerTests {
         sh.connectToBoardSuccess(id, users, board);
         verify(sl, delay).connectToBoardSuccess(123, users, board);
     }
+
+
+    /**
+     * Test updatePixel message
+     */
+    @Test
+    public void testUpdatePixel() {
+        Point p = new Point(12,34);
+        Color c = new Color(1,2,3);
+
+        sh.updatePixel(p,c);
+        verify(sl, delay).updatePixel(p,c);
+    }
+
+
+    /**
+     * Test updateUsers message
+     */
+    @Test
+    public void testUpdateUsers() {
+        List<String> users = Arrays.asList("fred", "bob");
+
+        sh.updateUsers(users);
+        verify(sl, delay).updateUsers(users);
+    }
+
+
+    /**
+     * Test disconnectFromBoardSuccess message
+     */
+    @Test
+    public void testDisconnectFromBoardSuccess() {
+        sh.disconnectFromBoardSuccess();
+        verify(sl, delay).disconnectFromBoardSuccess();
+    }
+
+
+    /**
+     * Test serverClose message
+     */
+    @Test
+    public void testServerClose() {
+        sh.serverClose();
+        verify(sl, delay).serverClose();
+    }
 }
