@@ -36,11 +36,11 @@ public class SocketWrapperTest {
         SocketWrapperListener l1 = mock(SocketWrapperListener.class);
         SocketWrapperListener l2 = mock(SocketWrapperListener.class);
 
-        s1.start();
-        s2.start();
-
         s1.setSocketWrapperListener(l1);
         s2.setSocketWrapperListener(l2);
+
+        s1.start();
+        s2.start();
 
 
         // Test sending and receiving

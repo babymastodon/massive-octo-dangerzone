@@ -29,6 +29,10 @@ import static common.SocketState.*;
  */
 public class ServerSocketHandler implements ServerMessageListener{
 
+    // Assert that functions are called in the proper states.
+    // Only affects DEBUG mode, so thread-safety is a non-issue.
+    public boolean disableStateAssertions = false;
+
     private final SocketWrapper socketWrapper;
     private ClientMessageListener listener;
 
@@ -79,7 +83,7 @@ public class ServerSocketHandler implements ServerMessageListener{
     public synchronized void loginSuccess() {
         if (serverInterfaceOpen){
             assert listener != null;
-            assert state == LOGIN_PENDING;
+            assert state == LOGIN_PENDING || disableStateAssertions;
 
             state = NOT_CONNECTED;
             socketWrapper.writeLine("ls");
@@ -109,7 +113,7 @@ public class ServerSocketHandler implements ServerMessageListener{
     public synchronized void connectToBoardSuccess(int id, List<String> users, Whiteboard data) {
         if (serverInterfaceOpen){
             assert listener != null;
-            assert state == CONNECT_PENDING;
+            assert state == CONNECT_PENDING || disableStateAssertions;
 
             state = CONNECTED;
             StringBuilder b = new StringBuilder();
@@ -142,7 +146,7 @@ public class ServerSocketHandler implements ServerMessageListener{
     public synchronized void updatePixel(Point point, Color color) {
         if (serverInterfaceOpen){
             assert listener != null;
-            assert state == CONNECTED || state == DISCONNECT_PENDING;
+            assert state == CONNECTED || state == DISCONNECT_PENDING || disableStateAssertions;
 
             StringBuilder b = new StringBuilder();
             b.append("p ");
@@ -159,7 +163,7 @@ public class ServerSocketHandler implements ServerMessageListener{
     public synchronized void updateUsers(List<String> users) {
         if (serverInterfaceOpen){
             assert listener != null;
-            assert state == CONNECTED || state == DISCONNECT_PENDING;
+            assert state == CONNECTED || state == DISCONNECT_PENDING || disableStateAssertions;
 
             StringBuilder b = new StringBuilder();
             b.append("u ");
@@ -177,7 +181,7 @@ public class ServerSocketHandler implements ServerMessageListener{
     public synchronized void disconnectFromBoardSuccess() {
         if (serverInterfaceOpen){
             assert listener != null;
-            assert state == DISCONNECT_PENDING;
+            assert state == DISCONNECT_PENDING || disableStateAssertions;
 
             state = NOT_CONNECTED;
             socketWrapper.writeLine("ds");
@@ -207,7 +211,7 @@ public class ServerSocketHandler implements ServerMessageListener{
             switch(tokens[0]){
                 case "dr":
                     // draw-line
-                    assert state == CONNECTED;
+                    assert state == CONNECTED || disableStateAssertions;
                     assert tokens.length == 8;
                     Point p1 = new Point(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
                     Point p2 = new Point(Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]));
@@ -216,28 +220,28 @@ public class ServerSocketHandler implements ServerMessageListener{
                     break;
                 case "l":
                     // login
-                    assert state == NOT_LOGGED_IN;
+                    assert state == NOT_LOGGED_IN || disableStateAssertions;
                     assert tokens.length == 2;
                     _changeState(LOGIN_PENDING);
                     listener.login(tokens[1]);
                     break;
                 case "c":
                     // connect-to-board
-                    assert state == NOT_CONNECTED;
+                    assert state == NOT_CONNECTED || disableStateAssertions;
                     assert tokens.length == 2;
                     _changeState(CONNECT_PENDING);
                     listener.connectToBoard(Integer.parseInt(tokens[1]));
                     break;
                 case "d":
                     // disconnect-from-board
-                    assert state == CONNECTED;
+                    assert state == CONNECTED || disableStateAssertions;
                     assert tokens.length == 1;
                     _changeState(DISCONNECT_PENDING);
                     listener.disconnectFromBoard();
                     break;
                 case "n":
                     // new-board
-                    assert state == NOT_CONNECTED;
+                    assert state == NOT_CONNECTED || disableStateAssertions;
                     assert tokens.length == 1;
                     _changeState(CONNECT_PENDING);
                     listener.newBoard();

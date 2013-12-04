@@ -53,6 +53,8 @@ public class SocketLayerTests {
         // Create the socket handlers for client and server
         ch = new ClientSocketHandler(csw);
         sh = new ServerSocketHandler(ssw);
+        ch.disableStateAssertions = true;
+        sh.disableStateAssertions = true;
 
         // Create the mock MessageListeners for client and server
         cl = mock(ClientMessageListener.class);
