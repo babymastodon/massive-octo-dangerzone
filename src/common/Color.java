@@ -57,4 +57,29 @@ public class Color {
     public int getBlue(){
         return this.blue;
     }
+
+    /**
+     * Equality
+     *
+     * @return true if components are equal
+     */
+    public boolean equals(Object obj){
+        if (obj == null)
+            return false;
+        if (obj.getClass() != this.getClass())
+            return false;
+        Color that = (Color) obj;
+        return this.red == that.red &&
+            this.green == that.green &&
+            this.blue == that.blue;
+    }
+
+    /**
+     * Hash code
+     *
+     * @return integer hash code
+     */
+    public int hashCode(){
+        return (this.red << 16) + (this.green << 8) + this.blue;
+    }
 }
