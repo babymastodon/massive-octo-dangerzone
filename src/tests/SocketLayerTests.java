@@ -150,10 +150,80 @@ public class SocketLayerTests {
 
     /**
      * Test serverClose message
+     *
+     * Close message should additionally be propagated
+     * to the ClientMessageListener.
      */
     @Test
     public void testServerClose() {
         sh.serverClose();
+        verify(sl, delay).serverClose();
+        verify(cl, delay).clientClose();
+    }
+
+
+    /**
+     * Test login message
+     */
+    @Test
+    public void testLogin() {
+        ch.login("fred");
+        verify(cl, delay).login("fred");
+    }
+
+
+    /**
+     * Test connectToBoard message
+     */
+    @Test
+    public void testConnectToBoard() {
+        ch.connectToBoard(123);
+        verify(cl, delay).connectToBoard(123);
+    }
+
+
+    /**
+     * Test newBoard message
+     */
+    @Test
+    public void testNewBoard() {
+        ch.newBoard();
+        verify(cl, delay).newBoard();
+    }
+
+
+    /**
+     * Test disconnectFromBoard message
+     */
+    @Test
+    public void testDisconnectFromBoard() {
+        ch.disconnectFromBoard();
+        verify(cl, delay).disconnectFromBoard();
+    }
+
+
+    /**
+     * Test drawLine message
+     */
+    @Test
+    public void testDrawLine() {
+        Point p1 = new Point(12,34);
+        Point p2 = new Point(56,78);
+        Color c = new Color(1,2,34);
+        ch.drawLine(p1,p2,c);
+        verify(cl, delay).drawLine(p1,p2,c);
+    }
+
+    /**
+     * Test clientClose message
+     *
+     * Close message should additionally be propagated
+     * to the ServerMessageListener.
+     */
+    @Test
+    public void testClientClose() {
+        ch.clientClose();
+        verify(cl, delay).clientClose();
         verify(sl, delay).serverClose();
     }
 }
