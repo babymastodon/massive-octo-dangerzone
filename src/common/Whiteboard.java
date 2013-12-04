@@ -6,7 +6,7 @@ public class Whiteboard {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
 
-    private final Color[][] board = new Color[HEIGHT][WIDTH];
+    private final Color[][] board = new Color[WIDTH][HEIGHT];
 
     public Whiteboard(){
         initializeBoard();
@@ -144,5 +144,41 @@ public class Whiteboard {
                 //and we start in bottom left...
             }
         }
+    }
+
+    /**
+     * Equality
+     *
+     * @return true if colors are the same
+     */
+    public boolean equals(Object obj){
+        if (obj == null)
+            return false;
+        if (obj.getClass() != this.getClass())
+            return false;
+        Whiteboard that = (Whiteboard) obj;
+        for (int i = 0; i < WIDTH; i ++){
+            for (int j = 0; j < HEIGHT; j ++){
+                if (! this.board[i][j].equals(that.board[i][j])){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Hash code
+     *
+     * @return integer hash code
+     */
+    public int hashCode(){
+        int sum = 0;
+        for (int i = 0; i < WIDTH; i ++){
+            for (int j = 0; j < HEIGHT; j ++){
+                sum += this.board[i][j].hashCode()*(i*j+i);
+            }
+        }
+        return sum;
     }
 }
