@@ -145,7 +145,7 @@ public class SessionHandler implements ClientMessageListener{
                 // draw the line on the whiteboard
                 Whiteboard board = connectedBoardStruct.getWhiteboard();
                 Point[] changedPoints = board.drawLine(
-                        p1, p2, color);
+                        p1, p2, color, 1); //TODO pick a width for the line
 
                 // notify clients of new pixel values
                 for (ServerMessageListener l: connectedBoardStruct.getListeners()){

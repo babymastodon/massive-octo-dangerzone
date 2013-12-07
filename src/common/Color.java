@@ -57,4 +57,13 @@ public class Color {
     public int getBlue(){
         return this.blue;
     }
+    
+    /**
+     * Two colors are equal if their rgb values are equal
+     * @param other
+     * @return
+     */
+    public boolean equals(Color other){
+        return this.red == other.red && this.green == other.green && this.blue == other.blue;
+    }
 }

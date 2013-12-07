@@ -35,4 +35,30 @@ public class Point{
     public int getY(){
         return y;
     }
+    
+    /**
+     * Two points are equal if their coordinates are equal
+     * @param other
+     * @return
+     */
+    @Override
+    public boolean equals(Object other){
+        if (!(other instanceof Point)){
+            return false;
+        }
+        return this.x == ((Point)(other)).x && this.y == ((Point)(other)).y;
+    }
+    
+    /**
+     * Very basic (and bad for collisions) hashcode, but at least it allows us
+     * to use hashsets.
+     */
+    @Override
+    public int hashCode(){
+        return this.x*10 + this.y;
+    }
+    
+    public String toString(){
+        return "x: " + this.x + ", y: " + this.y;
+    }
 }
