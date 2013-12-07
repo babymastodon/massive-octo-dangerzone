@@ -27,6 +27,16 @@ public class ClientGUI implements ServerMessageListener{
 
     }
 
+    /**
+     * Display the GUI on screen, and start listening for events
+     * from the user.
+     *
+     * precondition: setClientMessageListener must have been called
+     * with a non-null argument.
+     */
+    public void start(){
+    }
+
     @Override
     public void loginSuccess() {
         // TODO Auto-generated method stub
