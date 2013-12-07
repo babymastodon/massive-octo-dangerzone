@@ -1,6 +1,8 @@
 package common;
 
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
 
 public class Whiteboard {
     public static final int WIDTH = 800;
@@ -48,7 +50,7 @@ public class Whiteboard {
      * @param color: the color to make the line
      * @return an array of all the points in the modified line segment
      */
-    public Point[] drawLine(Point point1, Point point2, Color color){
+    public List<Point> drawLine(Point point1, Point point2, Color color){
         assert checkPointInBounds(point1);
         assert checkPointInBounds(point2);
 
@@ -56,7 +58,7 @@ public class Whiteboard {
             //same point
             board[point1.getX()][point1.getY()] = color;
             Point[] changedPoints = {point1};
-            return changedPoints;
+            return Arrays.asList(changedPoints);
         }
 
         if (point1.getX() == point2.getX()){
@@ -67,7 +69,7 @@ public class Whiteboard {
                 board[x][i] = color;
                 changedPoints[i] = new Point(x, i);
             }
-            return changedPoints;
+            return Arrays.asList(changedPoints);
         }
 
         double slope = (double)(point2.getY() - point1.getY())/(point2.getX() - point1.getX());
@@ -79,7 +81,7 @@ public class Whiteboard {
             changedPoints[i] = new Point(i, y);
         }
 
-        return changedPoints;
+        return Arrays.asList(changedPoints);
     }
 
     private boolean checkPointInBounds(Point point){

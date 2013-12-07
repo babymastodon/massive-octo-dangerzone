@@ -1,5 +1,7 @@
 package server;
 
+import java.util.List;
+
 import common.*;
 import static common.SocketState.*;
 
@@ -128,7 +130,7 @@ public class SessionHandler implements ClientMessageListener{
             assert listener != null;
             assert state == CONNECTED;
 
-            _disconnectFromBoard();
+            _disconnectFromBoard(true);
         }
     }
 
@@ -144,7 +146,7 @@ public class SessionHandler implements ClientMessageListener{
             synchronized(connectedBoardStruct){
                 // draw the line on the whiteboard
                 Whiteboard board = connectedBoardStruct.getWhiteboard();
-                Point[] changedPoints = board.drawLine(
+                List<Point> changedPoints = board.drawLine(
                         p1, p2, color);
 
                 // notify clients of new pixel values
@@ -167,7 +169,7 @@ public class SessionHandler implements ClientMessageListener{
 
             if (state == CONNECTED){
                 // If currently connected to a board, disconnect from it
-                _disconnectFromBoard();
+                _disconnectFromBoard(false);
             }
 
             if (state != NOT_LOGGED_IN){
@@ -218,7 +220,7 @@ public class SessionHandler implements ClientMessageListener{
     /**
      * Contains logic common to "disconnectFromBoard" and "close".
      */
-    private void _disconnectFromBoard(){
+    private void _disconnectFromBoard(boolean sendDisconnectSuccess){
         assert state == CONNECTED;
         assert listener != null;
         assert username != null;
@@ -234,7 +236,9 @@ public class SessionHandler implements ClientMessageListener{
 
             _notifyUsernamesChanged();
 
-            listener.disconnectFromBoardSuccess();
+            if (sendDisconnectSuccess){
+                listener.disconnectFromBoardSuccess();
+            }
         }
     }
 
