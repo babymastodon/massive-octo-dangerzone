@@ -25,6 +25,10 @@ import static common.SocketState.*;
  */
 public class ClientSocketHandler implements ClientMessageListener{
 
+    // Assert that functions are called in the proper states.
+    // Only affects DEBUG mode, so thread-safety is a non-issue.
+    public boolean disableStateAssertions = false;
+
     private final SocketWrapper socketWrapper;
     private ServerMessageListener listener;
 
@@ -75,7 +79,7 @@ public class ClientSocketHandler implements ClientMessageListener{
     public synchronized void login(String username) {
         if (clientInterfaceOpen){
             assert listener != null;
-            assert state == NOT_LOGGED_IN;
+            assert state == NOT_LOGGED_IN || disableStateAssertions;
 
             state = LOGIN_PENDING;
             socketWrapper.writeLine("l " + username);
@@ -86,7 +90,7 @@ public class ClientSocketHandler implements ClientMessageListener{
     public synchronized void connectToBoard(int id) {
         if (clientInterfaceOpen){
             assert listener != null;
-            assert state == NOT_CONNECTED;
+            assert state == NOT_CONNECTED || disableStateAssertions;
 
             state = CONNECT_PENDING;
             socketWrapper.writeLine("c " + id);
@@ -97,7 +101,7 @@ public class ClientSocketHandler implements ClientMessageListener{
     public synchronized void newBoard() {
         if (clientInterfaceOpen){
             assert listener != null;
-            assert state == NOT_CONNECTED;
+            assert state == NOT_CONNECTED || disableStateAssertions;
 
             state = CONNECT_PENDING;
             socketWrapper.writeLine("n");
@@ -108,7 +112,7 @@ public class ClientSocketHandler implements ClientMessageListener{
     public synchronized void disconnectFromBoard() {
         if (clientInterfaceOpen){
             assert listener != null;
-            assert state == CONNECTED;
+            assert state == CONNECTED || disableStateAssertions;
 
             state = DISCONNECT_PENDING;
             socketWrapper.writeLine("d");
@@ -119,7 +123,7 @@ public class ClientSocketHandler implements ClientMessageListener{
     public synchronized void drawLine(Point p1, Point p2, Color color) {
         if (clientInterfaceOpen){
             assert listener != null;
-            assert state == CONNECTED;
+            assert state == CONNECTED || disableStateAssertions;
 
             // state will remain CONNECTED
             StringBuilder b = new StringBuilder();
@@ -157,14 +161,14 @@ public class ClientSocketHandler implements ClientMessageListener{
             switch(tokens[0]){
                 case "ls":
                     // update-pixel
-                    assert state == LOGIN_PENDING;
+                    assert state == LOGIN_PENDING || disableStateAssertions;
                     assert tokens.length == 1;
                     _changeState(NOT_CONNECTED);
                     listener.loginSuccess();
                     break;
                 case "p":
                     // update-pixel
-                    assert state == CONNECTED || state == DISCONNECT_PENDING;
+                    assert state == CONNECTED || state == DISCONNECT_PENDING || disableStateAssertions;
                     assert tokens.length == 6;
                     Point p = new Point(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
                     Color c = new Color(Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5]));
@@ -172,13 +176,13 @@ public class ClientSocketHandler implements ClientMessageListener{
                     break;
                 case "u":
                     // update-users
-                    assert state == CONNECTED || state == DISCONNECT_PENDING;
+                    assert state == CONNECTED || state == DISCONNECT_PENDING || disableStateAssertions;
                     assert tokens.length == 2;
                     listener.updateUsers(Arrays.asList(tokens[1].split(",")));
                     break;
                 case "e":
                     // error
-                    assert state == LOGIN_PENDING || state == CONNECT_PENDING;
+                    assert state == LOGIN_PENDING || state == CONNECT_PENDING || disableStateAssertions;
                     assert tokens.length == 2;
                     int code = Integer.parseInt(tokens[1]);
                     switch(code){
@@ -195,14 +199,14 @@ public class ClientSocketHandler implements ClientMessageListener{
                     break;
                 case "ds":
                     // disconnect-from-board-success
-                    assert state == DISCONNECT_PENDING;
+                    assert state == DISCONNECT_PENDING || disableStateAssertions;
                     assert tokens.length == 1;
                     _changeState(NOT_CONNECTED);
                     listener.disconnectFromBoardSuccess();
                     break;
                 case "cs":
                     // connect-to-board-success
-                    assert state == CONNECT_PENDING;
+                    assert state == CONNECT_PENDING || disableStateAssertions;
                     assert tokens.length == 4;
                     int id = Integer.parseInt(tokens[1]);
                     List<String> usernames = Arrays.asList(tokens[2].split(","));
@@ -220,6 +224,7 @@ public class ClientSocketHandler implements ClientMessageListener{
             _serverClose();
         }
     }
+
 
     /**
      * Change the state of the ClientSocketHandler in a thread-safe manner.
@@ -241,19 +246,42 @@ public class ClientSocketHandler implements ClientMessageListener{
     }
 
     private Whiteboard _parseWhiteboard(String data){
-        String[] numbers = data.split(",");
         Whiteboard board = new Whiteboard();
 
         for (int y=0; y<Whiteboard.HEIGHT; y++){
             for (int x=0; x<Whiteboard.WIDTH; x++){
-                int baseIndex = (y*Whiteboard.WIDTH + x)*3;
-                int red = Integer.parseInt(numbers[baseIndex]);
-                int green = Integer.parseInt(numbers[baseIndex+1]);
-                int blue = Integer.parseInt(numbers[baseIndex+2]);
+                int baseIndex = (y*Whiteboard.WIDTH + x)*3*2;
+                int red = hexToByte(data.charAt(baseIndex), data.charAt(baseIndex+1));
+                int green = hexToByte(data.charAt(baseIndex+2), data.charAt(baseIndex+3));
+                int blue = hexToByte(data.charAt(baseIndex+4), data.charAt(baseIndex+5));
                 board.setPixel(new Point(x,y), new Color(red, green, blue));
             }
         }
 
         return board;
+    }
+
+    /**
+     * Convert a two-byte hex string (msb, lsb) into
+     * an integer.
+     */
+    private int hexToByte(char msb, char lsb){
+        return (hexToNibble(msb) << 4) + hexToNibble(lsb);
+    }
+
+    /**
+     * Convert a one-byte hex character into an integer.
+     */
+    private int hexToNibble(char hexChar){
+        if (hexChar >= '0' && hexChar <= '9'){
+            return hexChar - '0';
+        }
+        if (hexChar >= 'a' && hexChar <= 'f'){
+            return hexChar - 'a' + 10;
+        }
+        if (hexChar >= 'A' && hexChar <= 'F'){
+            return hexChar - 'A' + 10;
+        }
+        throw new RuntimeException("Invalid Hex Character: " + hexChar);
     }
 }
