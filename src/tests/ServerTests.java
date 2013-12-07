@@ -70,34 +70,4 @@ public class ServerTests {
 		ab.logout(user1);
 		assertEquals(true, ab.login(user2));
 	}
-	
-	
-	/**
-	 * Test WhiteboardStructure
-	 */
-	
-	@Test
-	public void whiteboardStructBasic(){
-		Whiteboard wb = mock(Whiteboard.class);
-		List<String> users = mock(List.class);
-		List<ServerMessageListener> listeners = mock(List.class);
-		int id = 5;
-		
-		WhiteboardStruct ws = new WhiteboardStruct(wb, users, listeners, id);
-		
-		assertEquals(wb, ws.getWhiteboard());
-		assertEquals(users, ws.getUsers());
-		assertEquals(listeners, ws.getListeners());
-		assertEquals(id, ws.getID());
-	}
-	
-	/**
-	 * Test WhiteboardMap
-	 */
-	
-	@Test
-	public void whiteboardMapBasic(){
-		WhiteboardMap wm = new WhiteboardMap();
-		wm.newBoard();
-	}
 }
