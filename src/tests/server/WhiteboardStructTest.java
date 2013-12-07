@@ -20,7 +20,8 @@ public class WhiteboardStructTest {
      * Test construction, getWhiteboard, getUsers,
      * getID and getListeners.
      */
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void whiteboardStructBasic(){
         Whiteboard wb = mock(Whiteboard.class);
         List<String> users = mock(List.class);

@@ -25,7 +25,11 @@ import javax.swing.SwingUtilities;
  * on it freehand, with the mouse.
  */
 public class Canvas extends JPanel {
-    // image where the user's drawing is stored
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -13283388735690293L;
+	// image where the user's drawing is stored
     private Image drawingBuffer;
     //set pen color
     private static Color color; 

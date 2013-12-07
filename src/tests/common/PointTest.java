@@ -1,9 +1,8 @@
 package tests.common;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import common.Point;
 

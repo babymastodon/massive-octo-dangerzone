@@ -4,8 +4,6 @@ import org.junit.Test;
 
 import org.mockito.verification.VerificationMode;
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
-
 import common.*;
 import java.net.*;
 import java.io.*;

@@ -2,10 +2,8 @@ package tests.server;
 
 import org.junit.Test;
 
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
-import common.*;
 import server.*;
 
 public class WhiteboardMapTest {
