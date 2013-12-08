@@ -83,7 +83,6 @@ public class Canvas extends JPanel {
         
         // IMPORTANT!  every time we draw on the internal drawing buffer, we
         // have to notify Swing to repaint this component on the screen.
-        this.repaint();
     }
     
     /*
@@ -113,7 +112,6 @@ public class Canvas extends JPanel {
                        eyeSize.width,
                        eyeSize.height);
         }
-        
         // IMPORTANT!  every time we draw on the internal drawing buffer, we
         // have to notify Swing to repaint this component on the screen.
         this.repaint();
