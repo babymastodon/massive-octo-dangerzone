@@ -5,8 +5,10 @@ import java.util.*;
 
 /**
  * Keeps maps from id's to boards with listeners.
- * Is thread-safe: uses the monitor pattern by making all the methods
- * synchronized.
+ *
+ * Thread safety:
+ *      Is thread-safe: uses the monitor pattern by making all the methods
+ *      synchronized.
  */
 public class WhiteboardMap {
     private ArrayList<WhiteboardStruct> structs;

@@ -9,8 +9,10 @@ import common.Whiteboard;
  * An object containing a final Whiteboard object, a list of ServerMessageListeners
  * listening on the whiteboard, and the ID number of the whiteboard.
  * 
- * It is NOT thread-safe. Clients should lock this object before accessing
- * or modifying any of its attributes.
+ *
+ * Thread safety:
+ *      It is NOT thread-safe. Clients should lock this object before accessing
+ *      or modifying any of its attributes.
  *
  */
 public class WhiteboardStruct {
