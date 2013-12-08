@@ -160,10 +160,11 @@ public class SessionHandlerTest {
         // draw a line
         Point p = new Point(1,1);
         Color c = new Color(1,2,3);
-        when(board.drawLine(p,p,c,1)).thenReturn(Arrays.asList(p));
+        int w = 132;
+        when(board.drawLine(p,p,c,w)).thenReturn(Arrays.asList(p));
         when(board.getPixel(p)).thenReturn(c);
 
-        session.drawLine(p, p, c);
+        session.drawLine(p, p, c, w);
         verify(sessionListener).updatePixel(p,c);
         verify(boardListener).updatePixel(p,c);
     }

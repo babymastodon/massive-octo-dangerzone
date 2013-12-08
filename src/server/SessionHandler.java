@@ -138,7 +138,7 @@ public class SessionHandler implements ClientMessageListener{
      * @see ClientMessageListener
      */
     @Override
-    public void drawLine(Point p1, Point p2, Color color) {
+    public void drawLine(Point p1, Point p2, Color color, int width) {
         if (clientInterfaceOpen){
             assert listener != null;
             assert state == CONNECTED;
@@ -148,7 +148,7 @@ public class SessionHandler implements ClientMessageListener{
                 Whiteboard board = connectedBoardStruct.getWhiteboard();
 
                 List<Point> changedPoints = board.drawLine(
-                        p1, p2, color, 1); //TODO pick a width for the line
+                        p1, p2, color, width);
 
                 // notify clients of new pixel values
                 for (ServerMessageListener l: connectedBoardStruct.getListeners()){
