@@ -16,9 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import canvas.Canvas;
-
-
 import common.*;
 
 
@@ -38,10 +35,7 @@ public class ClientGUI implements ServerMessageListener{
     // ---- begin section ------
     // variables in this section should not be accessed without
     // locking the ClientGUI object
-    private ArrayList<String> users = new ArrayList<String>();
-    private Whiteboard board = null;
-    private int boardID = -1;
-    private boolean loggedIn = false;
+    // TODO: add variables here
     // ---- end section --------
     
     // ---- begin section ------
@@ -49,7 +43,26 @@ public class ClientGUI implements ServerMessageListener{
     // Java Swing thread
     private String username;
     private JFrame loginWindow;
-    private ClientMessageListener cmListener = null;
+    private ClientMessageListener cmListener;
+    private BoardCanvas canvas;
+    private JLabel usersLabel;
+    private JLabel boardIDLabel;
+
+    private ArrayList<String> users = new ArrayList<String>();
+    private Whiteboard board;
+    private int boardID;
+    private JLabel usersLabel;
+    // ---- end section --------
+
+    // ---- begin section ------
+    // Constants for the user interface.
+    WHITE = new Color(255,255,255);
+    BLACK = new Color(0,0,0);
+    RED = new Color(230,20,20);
+    BLUE = new Color(20,20,230);
+    GREEN = new Color(20,230,20);
+    ERASER_WIDTH = 10;
+    PEN_WIDTH = 5;
     // ---- end section --------
     
     /**
@@ -70,113 +83,19 @@ public class ClientGUI implements ServerMessageListener{
      */
     public void start(){
         assert cmListener != null;
-        
-        if (!this.loggedIn){
+
         createLoginScreen();
-        showLoginScreen();}
-        
-        
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				final Canvas canvas = new Canvas(800, 600);
-				JFrame window = new JFrame("Whiteboard");
-				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				//penSize=5;
-
-				JButton eraseButton = new JButton("ERASE");
-				eraseButton.setName("ERASE");
-				eraseButton.setPreferredSize(new Dimension (100,100));
-				eraseButton.addActionListener( new ActionListener(){
-					public void actionPerformed(ActionEvent e) {
-						//canvas.setColor(Color.white);
-						canvas.setPenSize(30);
-					}
-				});
-				
-				
-				//TODO String users should be concatenated with users info. 
-				String Users;
-				JLabel users=new JLabel("Current Users: ");
-				JLabel colorInstr=new JLabel("Choose your color");
+        showLoginScreen();
 
 
-				JButton blackButton = new JButton("BLACK");
-				blackButton.setName("BLACK");
-				blackButton.setPreferredSize(new Dimension (100,100));
-				blackButton.addActionListener( new ActionListener(){
-					public void actionPerformed(ActionEvent e) {
-						//canvas.setColor(Color.black);
-						canvas.setPenSize(5);
-					}
-				});
-
-				JButton redButton = new JButton("RED");
-				redButton.setName("RED");
-				redButton.setPreferredSize(new Dimension (100,100));
-				redButton.addActionListener( new ActionListener(){
-					public void actionPerformed(ActionEvent e) {
-						//canvas.setColor(Color.red);
-						canvas.setPenSize(5);
-					}
-				});
-
-				JButton blueButton = new JButton("BLUE");
-				blueButton.setName("BLUE");
-				blueButton.setPreferredSize(new Dimension (100,100));
-				blueButton.addActionListener( new ActionListener(){
-					public void actionPerformed(ActionEvent e) {
-						//canvas.setColor(Color.blue);
-						canvas.setPenSize(5);
-					}
-				});
-
-				JButton greenButton = new JButton("GREEN");
-				greenButton.setName("GREEN");
-				greenButton.setPreferredSize(new Dimension (100,100));
-				greenButton.addActionListener( new ActionListener(){
-					public void actionPerformed(ActionEvent e) {
-						//canvas.setColor(Color.green);
-						canvas.setPenSize(5);
-					}
-				});
-				
-				JButton exitButton = new JButton("EXIT");
-				exitButton.setName("EXIT");
-				exitButton.setPreferredSize(new Dimension (100,100));
-				exitButton.addActionListener( new ActionListener(){
-					public void actionPerformed(ActionEvent e) {
-						//color=Color.BLACK;
-						//penSize=5;
-					}
-				});
-				JPanel canvasWithUsers=new JPanel();
-				canvasWithUsers.setLayout(new BoxLayout(canvasWithUsers, BoxLayout.Y_AXIS));
-				canvasWithUsers.add(canvas);
-				canvasWithUsers.add(users);
-		
-				JPanel drawAndErase=new JPanel();
-				drawAndErase.setLayout(new BoxLayout(drawAndErase, BoxLayout.Y_AXIS));
-				drawAndErase.add(colorInstr);
-				drawAndErase.add(blackButton);
-				drawAndErase.add(redButton);
-				drawAndErase.add(blueButton);
-				drawAndErase.add(greenButton);
-				drawAndErase.add(eraseButton);
-				drawAndErase.add(exitButton);
-				
-				window.setLayout(new FlowLayout());
-				window.add(canvasWithUsers);
-				window.add(drawAndErase);
-				window.pack();
-				window.setVisible(true);
-			}
-		});
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            }
+        });
     }
 
     @Override
     public void loginSuccess() {
-        // TODO Auto-generated method stub
-        this.loggedIn = true;
         System.out.println("Logged in");
     }
 
@@ -270,6 +189,93 @@ public class ClientGUI implements ServerMessageListener{
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 loginWindow.setVisible(false);
+            }
+        });
+    }
+
+    private void createCanvasScreen(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                loginWindow = new JFrame("Login Page");
+                JFrame canvasWindow = new JFrame("Whiteboard");
+
+                // Left-hand box contains the canvas and list of connected users
+                JPanel canvasWithUsers = new JPanel();
+                canvas = new BoardCanvas();
+                usersLabel = new JLabel();
+
+                canvasWithUsers.setLayout(new BoxLayout(canvasWithUsers, BoxLayout.Y_AXIS));
+                canvasWithUsers.add(canvas);
+                canvasWithUsers.add(users);
+
+                // Right-hand box contains the buttons, and the board id
+                JPanel drawAndErase=new JPanel();
+                boardIDLabel = new JLabel();
+                JLabel colorInstr = new JLabel("Choose your color");
+                JButton eraseButton = makeButton("ERASE", WHITE, ERASER_WIDTH);
+                JButton blackButton = makeButton("BLACK", BLACK, PEN_WIDTH);
+                JButton redButton = makeButton("RED", RED, PEN_WIDTH);
+                JButton blueButton = makeButton("BLUE", BLUE, PEN_WIDTH);
+                JButton greenButton = makeButton("GREEN", GREEN, PEN_WIDTH);
+                JButton exitButton = makeExitButton("GREEN", GREEN, PEN_WIDTH);
+
+                drawAndErase.setLayout(new BoxLayout(drawAndErase, BoxLayout.Y_AXIS));
+                drawAndErase.add(colorInstr);
+                drawAndErase.add(blackButton);
+                drawAndErase.add(redButton);
+                drawAndErase.add(blueButton);
+                drawAndErase.add(greenButton);
+                drawAndErase.add(eraseButton);
+                drawAndErase.add(exitButton);
+
+                // Add the two sub-panels to the JFrame
+                canvasWindow.setLayout(new FlowLayout());
+                canvasWindow.add(canvasWithUsers);
+                canvasWindow.add(drawAndErase);
+
+                loginWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                loginWindow.pack();
+                loginWindow.setMinimumSize(loginWindow.getSize());
+            }
+        });
+    }
+
+    private JButton makeButton(String label, Color color, int penSize){
+        JButton btn = new JButton(label);
+        btn.setName(label);
+        btn.setPreferredSize(new Dimension (100,100));
+        btn.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                // TODO: do something
+            }
+        });
+        return btn;
+    }
+
+    private JButton makeExitButton(){
+        JButton btn = new JButton(label);
+        btn.setName(label);
+        btn.setPreferredSize(new Dimension (100,100));
+        btn.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                // TODO: do something
+            }
+        });
+        return btn;
+    }
+
+    private void showCanvasScreen(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                canvasWindow.setVisible(true);
+            }
+        });
+    }
+
+    private void hideCanvasScreen(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                canvasWindow.setVisible(false);
             }
         });
     }
