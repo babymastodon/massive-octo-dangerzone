@@ -1,17 +1,23 @@
 package client;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+
+import canvas.Canvas;
+
 
 import common.*;
 
@@ -65,8 +71,106 @@ public class ClientGUI implements ServerMessageListener{
     public void start(){
         assert cmListener != null;
         
+        if (!this.loggedIn){
         createLoginScreen();
-        showLoginScreen();
+        showLoginScreen();}
+        
+        
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				final Canvas canvas = new Canvas(800, 600);
+				JFrame window = new JFrame("Whiteboard");
+				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				//penSize=5;
+
+				JButton eraseButton = new JButton("ERASE");
+				eraseButton.setName("ERASE");
+				eraseButton.setPreferredSize(new Dimension (100,100));
+				eraseButton.addActionListener( new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+						//canvas.setColor(Color.white);
+						canvas.setPenSize(30);
+					}
+				});
+				
+				
+				//TODO String users should be concatenated with users info. 
+				String Users;
+				JLabel users=new JLabel("Current Users: ");
+				JLabel colorInstr=new JLabel("Choose your color");
+
+
+				JButton blackButton = new JButton("BLACK");
+				blackButton.setName("BLACK");
+				blackButton.setPreferredSize(new Dimension (100,100));
+				blackButton.addActionListener( new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+						//canvas.setColor(Color.black);
+						canvas.setPenSize(5);
+					}
+				});
+
+				JButton redButton = new JButton("RED");
+				redButton.setName("RED");
+				redButton.setPreferredSize(new Dimension (100,100));
+				redButton.addActionListener( new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+						//canvas.setColor(Color.red);
+						canvas.setPenSize(5);
+					}
+				});
+
+				JButton blueButton = new JButton("BLUE");
+				blueButton.setName("BLUE");
+				blueButton.setPreferredSize(new Dimension (100,100));
+				blueButton.addActionListener( new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+						//canvas.setColor(Color.blue);
+						canvas.setPenSize(5);
+					}
+				});
+
+				JButton greenButton = new JButton("GREEN");
+				greenButton.setName("GREEN");
+				greenButton.setPreferredSize(new Dimension (100,100));
+				greenButton.addActionListener( new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+						//canvas.setColor(Color.green);
+						canvas.setPenSize(5);
+					}
+				});
+				
+				JButton exitButton = new JButton("EXIT");
+				exitButton.setName("EXIT");
+				exitButton.setPreferredSize(new Dimension (100,100));
+				exitButton.addActionListener( new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+						//color=Color.BLACK;
+						//penSize=5;
+					}
+				});
+				JPanel canvasWithUsers=new JPanel();
+				canvasWithUsers.setLayout(new BoxLayout(canvasWithUsers, BoxLayout.Y_AXIS));
+				canvasWithUsers.add(canvas);
+				canvasWithUsers.add(users);
+		
+				JPanel drawAndErase=new JPanel();
+				drawAndErase.setLayout(new BoxLayout(drawAndErase, BoxLayout.Y_AXIS));
+				drawAndErase.add(colorInstr);
+				drawAndErase.add(blackButton);
+				drawAndErase.add(redButton);
+				drawAndErase.add(blueButton);
+				drawAndErase.add(greenButton);
+				drawAndErase.add(eraseButton);
+				drawAndErase.add(exitButton);
+				
+				window.setLayout(new FlowLayout());
+				window.add(canvasWithUsers);
+				window.add(drawAndErase);
+				window.pack();
+				window.setVisible(true);
+			}
+		});
     }
 
     @Override
