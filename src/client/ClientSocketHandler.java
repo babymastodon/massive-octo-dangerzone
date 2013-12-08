@@ -120,7 +120,7 @@ public class ClientSocketHandler implements ClientMessageListener{
     }
 
     @Override
-    public synchronized void drawLine(Point p1, Point p2, Color color) {
+    public synchronized void drawLine(Point p1, Point p2, Color color, int width) {
         if (clientInterfaceOpen){
             assert listener != null;
             assert state == CONNECTED || disableStateAssertions;
@@ -134,7 +134,8 @@ public class ClientSocketHandler implements ClientMessageListener{
             b.append(p2.getY()).append(" ");
             b.append(color.getRed()).append(" ");
             b.append(color.getGreen()).append(" ");
-            b.append(color.getBlue());
+            b.append(color.getBlue()).append(" ");
+            b.append(width);
             socketWrapper.writeLine(b.toString());
         }
     }

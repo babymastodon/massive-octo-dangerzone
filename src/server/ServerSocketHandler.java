@@ -212,11 +212,12 @@ public class ServerSocketHandler implements ServerMessageListener{
                 case "dr":
                     // draw-line
                     assert state == CONNECTED || disableStateAssertions;
-                    assert tokens.length == 8;
+                    assert tokens.length == 9;
                     Point p1 = new Point(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
                     Point p2 = new Point(Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]));
                     Color c = new Color(Integer.parseInt(tokens[5]), Integer.parseInt(tokens[6]), Integer.parseInt(tokens[7]));
-                    listener.drawLine(p1, p2, c);
+                    int w = Integer.parseInt(tokens[8]);
+                    listener.drawLine(p1, p2, c, w);
                     break;
                 case "l":
                     // login

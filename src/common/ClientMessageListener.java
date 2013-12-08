@@ -41,7 +41,7 @@ public interface ClientMessageListener {
      * @param p2: the other end of the line segment to be drawn
      * @param color: the color of the line that should be drawn
      */
-    public void drawLine(Point p1, Point p2, Color color);
+    public void drawLine(Point p1, Point p2, Color color, int width);
 
     /**
      * The client should be closed down (such as sending "close"
