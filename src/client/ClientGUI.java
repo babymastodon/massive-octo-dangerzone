@@ -3,6 +3,16 @@ package client;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
 import common.*;
 
 
@@ -19,14 +29,22 @@ import common.*;
  * Instead of throwing exceptions, call serverClose()
  */
 public class ClientGUI implements ServerMessageListener{
+    // ---- begin section ------
+    // variables in this section should not be accessed without
+    // locking the ClientGUI object
     private ArrayList<String> users = new ArrayList<String>();
     private Whiteboard board = null;
     private int boardID = -1;
     private boolean loggedIn = false;
+    // ---- end section --------
     
-    
+    // ---- begin section ------
+    // variables in this section may only be accessed from the
+    // Java Swing thread
+    private String username;
+    private JFrame loginWindow;
     private ClientMessageListener cmListener = null;
-
+    // ---- end section --------
     
     /**
      * Use the provided listener object to send messages to the server.
@@ -47,13 +65,15 @@ public class ClientGUI implements ServerMessageListener{
     public void start(){
         assert cmListener != null;
         
-        //TODO display the gui...
+        createLoginScreen();
+        showLoginScreen();
     }
 
     @Override
     public void loginSuccess() {
         // TODO Auto-generated method stub
         this.loggedIn = true;
+        System.out.println("Logged in");
     }
 
     @Override
@@ -102,7 +122,51 @@ public class ClientGUI implements ServerMessageListener{
         this.board = null;
         this.boardID = -1;
         this.users = new ArrayList<String>();
-        
+
         cmListener.clientClose();
+    }
+
+    private void createLoginScreen(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                loginWindow = new JFrame("Login Page");
+                loginWindow.setLayout(new BoxLayout(loginWindow.getContentPane(), BoxLayout.X_AXIS));
+                final JLabel usernameLabel = new JLabel("Username:");
+                final JTextField usernameBox = new JTextField(20);
+                final JButton loginButton = new JButton("Login");
+                loginWindow.add(usernameLabel);
+                loginWindow.add(usernameBox);
+                loginWindow.add(loginButton);
+
+                loginButton.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        username = usernameBox.getText();
+                        if (!username.isEmpty()) {
+                            cmListener.login(username);
+                        }
+                    }
+                });
+
+                loginWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                loginWindow.pack();
+                loginWindow.setMinimumSize(loginWindow.getSize());
+            }
+        });
+    }
+
+    private void showLoginScreen(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                loginWindow.setVisible(true);
+            }
+        });
+    }
+
+    private void hideLoginScreen(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                loginWindow.setVisible(false);
+            }
+        });
     }
 }
