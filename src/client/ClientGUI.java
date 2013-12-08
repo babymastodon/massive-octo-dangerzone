@@ -43,8 +43,19 @@ public class ClientGUI implements ServerMessageListener{
     // Java Swing thread
     private String username;
     private JFrame loginWindow;
+    private JFrame connectWindow;
     private ClientMessageListener cmListener = null;
     // ---- end section --------
+    
+
+    /**
+     * Initialize class members. Make the GUI elements, but 
+     * don't show display them yet.
+     */
+    public ClientGUI(){
+        createLoginScreen();
+        createConnectScreen();
+    }
     
     /**
      * Use the provided listener object to send messages to the server.
@@ -65,15 +76,17 @@ public class ClientGUI implements ServerMessageListener{
     public void start(){
         assert cmListener != null;
         
-        createLoginScreen();
         showLoginScreen();
     }
 
     @Override
     public void loginSuccess() {
-        // TODO Auto-generated method stub
-        this.loggedIn = true;
-        System.out.println("Logged in");
+        synchronized (this){
+            // TODO: maybe this is not necessary
+            this.loggedIn = true;
+        }
+        hideLoginScreen();
+        showConnectScreen();
     }
 
     @Override
@@ -166,6 +179,60 @@ public class ClientGUI implements ServerMessageListener{
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 loginWindow.setVisible(false);
+            }
+        });
+    }
+
+    private void createConnectScreen(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                connectWindow = new JFrame("Login Page");
+                connectWindow.setLayout(new BoxLayout(connectWindow.getContentPane(), BoxLayout.X_AXIS));
+                final JLabel boardIDLabel = new JLabel("Board ID:");
+                final JTextField boardIDBox = new JTextField(20);
+                final JButton connectToBoardButton = new JButton("Connect to board");
+                final JButton newBoardButton = new JButton("New Board");
+                connectWindow.add(boardIDLabel);
+                connectWindow.add(boardIDBox);
+                connectWindow.add(connectToBoardButton);
+                connectWindow.add(newBoardButton);
+
+                connectToBoardButton.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        try{
+                            int boardID = Integer.parseInt(boardIDBox.getText());
+                            cmListener.connectToBoard(boardID);
+                        } catch (Exception ex) {
+                            // TODO: show a message?
+                        }
+                    }
+                });
+
+                newBoardButton.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        cmListener.newBoard();
+                    }
+                });
+
+                connectWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                connectWindow.pack();
+                connectWindow.setMinimumSize(connectWindow.getSize());
+            }
+        });
+    }
+
+    private void showConnectScreen(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                connectWindow.setVisible(true);
+            }
+        });
+    }
+
+    private void hideConnectScreen(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                connectWindow.setVisible(false);
             }
         });
     }

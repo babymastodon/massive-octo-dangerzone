@@ -200,13 +200,15 @@ public class SessionHandler implements ClientMessageListener{
         state = CONNECTED;
 
         synchronized(connectedBoardStruct){
-            // add a listener to the whiteboard object
-            // to receive updates
-            connectedBoardStruct.getListeners().add(listener);
             // add the username to the board
             connectedBoardStruct.getUsers().add(username);
 
+            // notify other clients that user has connected
             _notifyUsernamesChanged();
+
+            // add a listener to the whiteboard object
+            // to receive updates
+            connectedBoardStruct.getListeners().add(listener);
 
             // the response to the client must occur within the synchronized block
             // to ensure that this message arrives at the client before
@@ -232,9 +234,10 @@ public class SessionHandler implements ClientMessageListener{
         synchronized(connectedBoardStruct){
             // remove the whiteboard listener
             connectedBoardStruct.getListeners().remove(listener);
+
             // remove the username
             connectedBoardStruct.getUsers().remove(username);
-
+            // notify clients after removing this session's listener
             _notifyUsernamesChanged();
 
             if (sendDisconnectSuccess){
