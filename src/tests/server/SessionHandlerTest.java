@@ -9,6 +9,25 @@ import java.util.*;
 import common.*;
 import server.*;
 
+/**
+ * Suite of tests that SessionHandler.java performs the right server-side
+ * actions based on client events. The tests use Mockito to create and use mock
+ * objects in the tests.
+ * 
+ * Testing strategy:
+ * For all tests, use mock AuthenticationBackend, WhiteboardMap, and Whiteboards
+ * Successful login calls loginSuccess()
+ * Unsuccessful login calls error(100)
+ * Successfully connecting to board calls connectToBoardSuccess() and updates usernames
+ * Unsuccessfully connecting to board calls error(200)
+ * Successfully creating a new board calls connectToBoardSuccess() and updates usernames
+ * Disconnecting from a board calls disconnectFromBoardSuccess() and updates usernames
+ * Drawing a line calls updatePixel() for both boardListenr and sessionListener
+ * The client closing calls sessionListener.serverClose(), logouts out the user, and updates
+ * usernames.
+ * 
+ * None of the tests ever throw exceptions.
+ */
 public class SessionHandlerTest {
 
     /**
@@ -35,7 +54,7 @@ public class SessionHandlerTest {
 
 
     /**
-     * Set up the mocks and create the SessionHandler object
+     * Set up the mocks and create the SessionHandler object for the rest of the tests
      */
     @Before
     public void setUp(){
@@ -160,10 +179,11 @@ public class SessionHandlerTest {
         // draw a line
         Point p = new Point(1,1);
         Color c = new Color(1,2,3);
-        when(board.drawLine(p,p,c,1)).thenReturn(Arrays.asList(p));
+        int w = 132;
+        when(board.drawLine(p,p,c,w)).thenReturn(Arrays.asList(p));
         when(board.getPixel(p)).thenReturn(c);
 
-        session.drawLine(p, p, c);
+        session.drawLine(p, p, c, w);
         verify(sessionListener).updatePixel(p,c);
         verify(boardListener).updatePixel(p,c);
     }

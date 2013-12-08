@@ -52,6 +52,7 @@ public class SocketWrapper{
                         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                         for (String line = in.readLine(); line != null; line = in.readLine()) {
+                            System.out.println("receiving: " + line);
                             listener.onReadLine(line.trim());
                         }
                     } catch (IOException e){
@@ -79,6 +80,7 @@ public class SocketWrapper{
         assert listener != null;
 
         try {
+            System.out.println("sending: " + line);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             out.println(line);
         } catch (IOException e){

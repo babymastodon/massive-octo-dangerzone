@@ -208,8 +208,9 @@ public class SocketLayerTests {
         Point p1 = new Point(12,34);
         Point p2 = new Point(56,78);
         Color c = new Color(1,2,34);
-        ch.drawLine(p1,p2,c);
-        verify(cl, delay).drawLine(p1,p2,c);
+        int w = 123;
+        ch.drawLine(p1,p2,c,w);
+        verify(cl, delay).drawLine(p1,p2,c,w);
     }
 
     /**

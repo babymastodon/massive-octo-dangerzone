@@ -82,10 +82,9 @@ public class Canvas extends JPanel {
         
         // IMPORTANT!  every time we draw on the internal drawing buffer, we
         // have to notify Swing to repaint this component on the screen.
-        this.repaint();
     }
     
-  
+
     
     /*
      * Draw a line between two points (x1, y1) and (x2, y2), specified in
