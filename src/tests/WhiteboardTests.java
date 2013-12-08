@@ -2,7 +2,6 @@ package tests;
 
 import static org.junit.Assert.*;
 
-import java.awt.List;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -39,7 +38,7 @@ public class WhiteboardTests {
         Color white = new Color();
         ArrayList<Point> expectedPoints = new ArrayList<Point>();
         expectedPoints.add(new Point(20, 65));
-        ArrayList<Point> modifiedPoints = new ArrayList(wb.drawLine(new Point(20, 65), new Point(20, 65), newColor, 1));
+        ArrayList<Point> modifiedPoints = new ArrayList<Point>(wb.drawLine(new Point(20, 65), new Point(20, 65), newColor, 1));
         for (int i = 0; i < Whiteboard.WIDTH; i ++){
             for (int j = 0; j < Whiteboard.HEIGHT; j ++){
                 Point p = new Point(i, j);
