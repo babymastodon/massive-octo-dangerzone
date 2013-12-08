@@ -3,6 +3,8 @@ package common;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Whiteboard {
     public static final int WIDTH = 800;
@@ -48,40 +50,138 @@ public class Whiteboard {
      * @param point1: one end of the line segment
      * @param point2: the other end of the line segment
      * @param color: the color to make the line
-     * @return an array of all the points in the modified line segment
+     * @param width: side length of the square that represents the area of the brush centered at a given
+     * point.
+     * @return an array of all the points in the modified line segment.
      */
-    public List<Point> drawLine(Point point1, Point point2, Color color){
+
+    public List<Point> drawLine(Point point1, Point point2, Color color, int width){
         assert checkPointInBounds(point1);
         assert checkPointInBounds(point2);
 
+        double sideLength = width/2.0;
+        if (width == 1){
+            sideLength = 0;
+        }
+        
         if (point1.equals(point2)){
             //same point
-            board[point1.getX()][point1.getY()] = color;
-            Point[] changedPoints = {point1};
-            return Arrays.asList(changedPoints);
+            return Arrays.asList(drawSquare(point1, sideLength, color));
         }
 
         if (point1.getX() == point2.getX()){
             //vertical line
-            Point[] changedPoints = new Point[Math.abs(point1.getY() - point2.getY()) + 1];
-            int x = point1.getX();
-            for (int i = Math.min(point1.getY(), point2.getY()); i <= Math.max(point1.getY(), point2.getY()) ; i ++){
-                board[x][i] = color;
-                changedPoints[i] = new Point(x, i);
+
+            return  Arrays.asList(drawVerticalLine(point1, point2, color, sideLength));
+        }
+
+        //general case (diagonal or horizontal line)
+        Point leftPoint = point1;
+        Point rightPoint = point2;
+        if (point1.getX() >= point2.getX()){
+            leftPoint = point2;
+            rightPoint = point1;
+        }
+        boolean leftIsBelow = leftPoint.getY() <= rightPoint.getY();
+
+        double slope = (double)(rightPoint.getY() - leftPoint.getY())/(rightPoint.getX() - leftPoint.getX());
+        ArrayList<Point> changePoints = new ArrayList<Point>();
+        
+        int counter = 0;
+
+        for (int i = leftPoint.getX(); i <= rightPoint.getX() ; i ++){
+            int y = (int)(slope*counter) + leftPoint.getY();
+
+            if (leftIsBelow){
+                while (y <= (int)(slope*(counter+1)) + leftPoint.getY() && 
+                        y <= rightPoint.getY() + Math.ceil(sideLength)){
+                    Point[] squarePoints = drawSquare(new Point(i, y), sideLength, color);
+                    changePoints.addAll(Arrays.asList(squarePoints));
+                    y++;
+                }
             }
-            return Arrays.asList(changedPoints);
+
+            else{
+                while (y >= (int)(slope*(counter+1)) + leftPoint.getY() && 
+                        y >= rightPoint.getY() - Math.ceil(sideLength)){
+                    Point[] squarePoints = drawSquare(new Point(i, y), sideLength, color);
+                    changePoints.addAll(Arrays.asList(squarePoints));
+                    y--;
+                }
+            }
+            counter ++;
+        }
+        
+        return Arrays.asList(removeDuplicates(changePoints));
+    }
+    
+    private Point[] drawVerticalLine(Point point1, Point point2, Color color, double sideLength){
+        ArrayList<Point> changedPoints = new ArrayList<Point>();
+
+        int x = point1.getX();
+        for (int i = Math.min(point1.getY(), point2.getY()); i <= Math.max(point1.getY(), point2.getY()) ; i ++){
+            Point[] newPoints = drawSquare(new Point(x, i), sideLength, color);
+            changedPoints.addAll(Arrays.asList(newPoints));
+        }
+        
+        HashSet<Point> hs = new HashSet<Point>();
+        hs.addAll(changedPoints);
+        ArrayList<Point> noDuplicates = new ArrayList<Point>();
+        noDuplicates.addAll(hs);
+
+        Point[] coloredPoints = new Point[noDuplicates.size()];
+        for (int i = 0; i < noDuplicates.size(); i ++){
+            coloredPoints[i] = noDuplicates.get(i);
+        }
+        
+        return coloredPoints;
+    }
+
+    private Point[] removeDuplicates(ArrayList<Point> changePoints){
+        HashSet<Point> hs = new HashSet<Point>();
+        hs.addAll(changePoints);
+        ArrayList<Point> noDuplicates = new ArrayList<Point>();
+        noDuplicates.addAll(hs);
+
+        Point[] coloredPoints = new Point[noDuplicates.size()];
+        for (int i = 0; i < noDuplicates.size(); i ++){
+            coloredPoints[i] = noDuplicates.get(i);
+        }
+        return coloredPoints;
+    }
+    
+    /**
+     * if sideLength == 0, just do that point.
+     * @param center
+     * @param sideLength
+     * @param color
+     * @return
+     */
+    private Point[] drawSquare(Point center, double sideLength, Color color){
+        ArrayList<Point> changedPoints = new ArrayList<Point>();
+        int x = center.getX();
+        int y = center.getY();
+
+        if (sideLength == 0 && checkPointInBounds(center)){
+            board[x][y] = color;
+            Point[] singlePoint = {center};
+            return singlePoint;
         }
 
-        double slope = (double)(point2.getY() - point1.getY())/(point2.getX() - point1.getX());
-        Point[] changedPoints = new Point[Math.abs(point1.getY() - point2.getY()) + Math.abs(point1.getX() - point2.getX()) + 1];
-
-        for (int i = Math.min(point1.getX(), point2.getX()); i <= Math.max(point1.getX(), point2.getX()) ; i ++){
-            int y = (int)(slope*i) + Math.min(point1.getX(), point2.getX());
-            board[i][y] = color;
-            changedPoints[i] = new Point(i, y);
+        for(int i = (int)-sideLength; i < Math.ceil(sideLength); i ++){
+            for(int j = (int)-sideLength; j < Math.ceil(sideLength); j ++){
+                if (checkPointInBounds(new Point(x+i, y + j))){
+                    board[x+i][y+j] = color;
+                    changedPoints.add(new Point(x+i, y+j));
+                }
+            }
         }
 
-        return Arrays.asList(changedPoints);
+        Point[] coloredPoints = new Point[changedPoints.size()];
+        for (int i = 0; i < changedPoints.size(); i ++){
+            coloredPoints[i] = changedPoints.get(i);
+        }
+        return coloredPoints;
     }
 
     private boolean checkPointInBounds(Point point){

@@ -37,7 +37,8 @@ public class AuthenticationBackendTest{
     }
 
     /**
-     * Logging out works whether or not you are already logged in.
+     * Logging out works whether or not you are already logged in. This test just makes sure
+     * that no exceptions are thrown.
      */
     @Test
     public void logoutBasic(){

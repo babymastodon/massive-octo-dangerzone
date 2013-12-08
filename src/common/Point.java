@@ -36,7 +36,6 @@ public class Point{
         return y;
     }
 
-
     /**
      * Equality
      *
