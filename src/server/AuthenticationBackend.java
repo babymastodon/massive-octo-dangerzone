@@ -4,8 +4,10 @@ import java.util.HashSet;
 
 /**
  * Authenticates usernames (ensures that they are unique).
- * Is thread-safe: uses the monitor pattern, so all methods are
- * synchronized.
+ *
+ * Thread safety:
+ *      Is thread-safe: uses the monitor pattern, so all methods are
+ *      synchronized.
  */
 public class AuthenticationBackend {
     private HashSet<String> loggedInUsers;

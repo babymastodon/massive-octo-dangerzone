@@ -10,13 +10,15 @@ import common.*;
  * connection, it constructs a new ServerSocketHandler, a new SessionController,
  * and connects them together by adding them to each other as listeners.
  * 
- * This is NOT thread-safe.
+ * Thread safety:
+ *      Public interface is not thread safe.
  */
 public class ServerController {
 
     private final ServerSocket serverSocket;
     private final AuthenticationBackend auth;
     private final WhiteboardMap map;
+    private boolean runCalled;
 
     /**
      * Construct a ServerController that listens for new connections on
@@ -27,12 +29,18 @@ public class ServerController {
         this.serverSocket = s;
         this.auth = new AuthenticationBackend();
         this.map = new WhiteboardMap();
+        this.runCalled = false;
     }
 
     /**
      * Execute the main loop.
+     *
+     * May only be called once.
      */
     public void run(){
+        assert runCalled == false;
+        runCalled = true;
+
         // run the server forever
         while (true){
             final Socket socket;

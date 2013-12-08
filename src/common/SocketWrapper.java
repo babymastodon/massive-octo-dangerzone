@@ -4,11 +4,25 @@ import java.io.*;
 import java.net.*;
 
 /**
- * Contains generic functionality to implement a thread that reads lines from a socket.
+ * Contains generic functionality to implement a thread that reads
+ * lines from a socket.
  *
- * public interface is synchronized and thread safe
- * client should set the listener with setSocketWrapperListener() before
- *  calling any other functions.
+ * Calling the "start" function will initiate a single background thread
+ * that will call certain functions on the SocketWrapperListener as
+ * messages arrive on the wire.
+ *
+ * The onReadLine, onReadError, and onReadFinish functions are guarenteed
+ *      to be executed from the single background thread.
+ *
+ * The onWriteError is guarenteed to be executed from the same thread
+ *      that called the "writeLine" function
+ *
+ * Client must set the listener with setSocketWrapperListener() before
+ *      calling any other functions.
+ *
+ *
+ * Thread safety:
+ *      Public interface is synchronized and therefore thread safe.
  */
 public class SocketWrapper{
 
@@ -38,7 +52,7 @@ public class SocketWrapper{
     /**
      * Start the background listener thread.
      *
-     * Listener must not be null.
+     * Listener must not be null. May only be called once.
      */
     public synchronized void start(){
         assert listener != null;
@@ -55,7 +69,7 @@ public class SocketWrapper{
                             System.out.println("receiving: " + line);
                             listener.onReadLine(line.trim());
                         }
-                    } catch (IOException e){
+                    } catch (Exception e){
                         listener.onReadError(e);
                     } finally {
                         listener.onReadFinish();
@@ -72,7 +86,8 @@ public class SocketWrapper{
      * Write a string to the socket. A newline character is
      * automatically appended to the string.
      *
-     * Listener must not be null.
+     * Listener must not be null. In case of failure, the
+     *      "onWriteError" function of the listener is executed.
      *
      * @param line a single-line string to write to the socket
      */

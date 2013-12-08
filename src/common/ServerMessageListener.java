@@ -5,9 +5,9 @@ import java.util.List;
 /**
  * Callback functions that should be executed for events starting
  * in the server.
- * None of the methods should throw exceptions, even when there are
- * socket failures.
- * The interface is NOT threadsafe.
+ *
+ * Thread safety:
+ *      Public interface may or may not be thread safe.
  */
 public interface ServerMessageListener {
     /**

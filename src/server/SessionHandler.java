@@ -14,7 +14,6 @@ import static common.SocketState.*;
  * with a non-null argument.
  * 
  * There is one session controller for each client connection.
- * This is NOT thread-safe.
  * When clientClose() is called for the first time, unregister the listener in
  * the WhiteboardMap if connected to a whiteboard.
  * if one is registered, remove the current username from the Authentication
@@ -26,6 +25,10 @@ import static common.SocketState.*;
  *      - connectedBoardStruct is not null when in the CONNECTED or
  *        DISCONNECT_PENDING state
  *      - username is not null in any state except the NOT_LOGGED_IN state
+ *
+ * Thread safety:
+ *      Public interface is not thread-safe. May only be accessed by a
+ *          single thread.
  */
 public class SessionHandler implements ClientMessageListener{
     private final AuthenticationBackend auth;

@@ -1,11 +1,10 @@
 package common;
 
 /**
- * Callback functions to be executed for events originating in the client
- * It is NOT guaranteed to be threadsafe.
- * Instead of throwing exceptions, the class should call clientClose() if
- * something bad happens
+ * Callback functions to be executed for events originating in the client.
  *
+ * Thread safety:
+ *      Public interface may or may not be thread safe.
  */
 public interface ClientMessageListener {
     /**

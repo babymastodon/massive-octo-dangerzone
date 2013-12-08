@@ -2,6 +2,9 @@ package common;
 
 /**
  * Immutable, thread safe pair of integer (x,y) coordinates.
+ *
+ * Thread safety:
+ *      It is completely immutable and threadsafe.
  */
 public class Point{
     private int x;
