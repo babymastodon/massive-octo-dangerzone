@@ -52,7 +52,7 @@ public class ClientGUI implements ServerMessageListener{
     private Whiteboard board;
     private int boardID;
     // ---- end section --------
-    
+
     // ---- begin section ------
     // variables in this section may only be accessed from the
     // Java Swing thread
@@ -80,11 +80,11 @@ public class ClientGUI implements ServerMessageListener{
     private static final Color RED = new Color(230,20,20);
     private static final Color BLUE = new Color(20,20,230);
     private static final Color GREEN = new Color(20,230,20);
-    private static int ERASER_WIDTH = 10;
-    private static int PEN_WIDTH = 5;
-    private static int REFRESH_DELAY = 100;
+    private static final int ERASER_WIDTH = 40;
+    private static final int PEN_WIDTH = 5;
+    private static final int REFRESH_DELAY = 20;
     // ---- end section --------
-    
+
 
     /**
      * Initialize class members. Make the GUI elements, but 
@@ -95,7 +95,7 @@ public class ClientGUI implements ServerMessageListener{
         createConnectScreen();
         createCanvasScreen();
     }
-    
+
     /**
      * Use the provided listener object to send messages to the server.
      * @param l: the listener used to send messages.
@@ -345,6 +345,7 @@ public class ClientGUI implements ServerMessageListener{
                 canvasWindow.add(drawAndErase);
 
                 addDrawingController();
+
                 // Start a timer that repaints the canvas up to
                 // 1000/REFRESH_DELAY times per second if the UI has
                 // changed
@@ -356,6 +357,7 @@ public class ClientGUI implements ServerMessageListener{
                         }
                     }
                 }).start();
+
                 canvasWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 canvasWindow.pack();
                 canvasWindow.setMinimumSize(canvasWindow.getSize());
@@ -379,15 +381,19 @@ public class ClientGUI implements ServerMessageListener{
         // draw a line segment from that last point to the point of the next mouse event.
         private int lastX, lastY; 
 
-        /*
-         * When mouse button is pressed down, start drawing.
+        /**
+         * When mouse button is pressed down, draw a single point.
          */
         public void mousePressed(MouseEvent e) {
             lastX = e.getX();
             lastY = e.getY();
+
+            Point thisPoint = new Point(lastX, board.HEIGHT-lastY);
+
+            drawLine(thisPoint, thisPoint);
         }
 
-        /*
+        /**
          * When mouse moves while a button is pressed down,
          * draw a line segment.
          */
@@ -395,9 +401,31 @@ public class ClientGUI implements ServerMessageListener{
             int x = e.getX();
             int y = e.getY();
             
-            cmListener.drawLine(new Point(lastX, board.HEIGHT-lastY), new Point(x,board.HEIGHT-y), color, penSize);
+            Point lastPoint = new Point(lastX, board.HEIGHT-lastY);
+            Point thisPoint = new Point(x, board.HEIGHT-y);
+
+            drawLine(lastPoint, thisPoint);
+
             lastX = x;
             lastY = y;
+        }
+
+        /**
+         * Draw a line on the local whiteboard, and send a drawLine
+         * message to the server.
+         */
+        private void drawLine(Point lastPoint, Point thisPoint){
+            if (Whiteboard.checkPointInBounds(thisPoint) && Whiteboard.checkPointInBounds(lastPoint)){
+                // draw immediately to the local board so that the
+                // user gets instant feedback
+                synchronized(this){
+                    board.drawLine(lastPoint, thisPoint, color, penSize);
+                }
+                requestRefresh();
+
+                // send to the server
+                cmListener.drawLine(lastPoint, thisPoint, color, penSize);
+            }
         }
 
         // Ignore all these other mouse events.
@@ -421,8 +449,8 @@ public class ClientGUI implements ServerMessageListener{
         btn.setPreferredSize(new Dimension (100,100));
         btn.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-            	color=col;
-            	penSize=penSi;
+                color=col;
+                penSize=penSi;
             }
         });
         return btn;
