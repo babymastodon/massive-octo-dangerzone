@@ -23,7 +23,6 @@ import common.*;
 
 
 /**
- * It is not thread-safe.
  * Stores the list of all usernames currently connected to the internal
  * Whiteboard object.
  * Stores the state of the board in previously mentioned Whiteboard object.
@@ -33,6 +32,15 @@ import common.*;
  * When serverClose() is called, close the GUI if it isn't already closed.
  * When the GUI is closed, call clientClose() of the ClientMessageListener
  * Instead of throwing exceptions, call serverClose()
+ *
+ * Thread safety:
+ *      Public interface is not thread safe. Should only be accessed
+ *          from a single thread.
+ *      Some of the class members are shared with the Swing event loop
+ *          thread. These variables are accessed only when the ClientGUI lock
+ *          is held.
+ *      Some of the class members may only be accessed from within the
+ *          Swing event loop thread using SwingUtilities.InvokeLater(). 
  */
 public class ClientGUI implements ServerMessageListener{
     // ---- begin section ------

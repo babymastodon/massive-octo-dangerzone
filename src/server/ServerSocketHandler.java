@@ -21,23 +21,31 @@ import static common.SocketState.*;
  * Call listener.clientClose() if error while reading.
  *
  * Thread safety: 
- * The public interface is synchronized.
- * Code in the SocketWrapperListener (which gets run on a single, separate thread)
- *      locks the ServerSocketHandler object before changing the state.
- *      (The ClientMessageListener isn't locked, because it is never touched
- *      by the public interface)
+ *      Public interface is thread safe.
+ *      This is achieved by locking the ServerSocketHandler before
+ *          accessing any of its shared private members.
+ *      Some variables are accessed from the single SocketWrapper's thread,
+ *          but they don't have to be locked.
  */
 public class ServerSocketHandler implements ServerMessageListener{
 
     // Assert that functions are called in the proper states.
     // Only affects DEBUG mode, so thread-safety is a non-issue.
-    public boolean disableStateAssertions = false;
+    public static boolean disableStateAssertions = false;
 
-    private final SocketWrapper socketWrapper;
-    private ClientMessageListener listener;
-
+    // ------ begin section -------
+    // these variables might be accessed by multiple threads,
+    // so they only may be accessed after locking the ServerSocketHandler object
     private SocketState state;
     private boolean serverInterfaceOpen;
+    private final SocketWrapper socketWrapper;
+    // ------ end section -------
+
+    // ------ begin section -------
+    // these variables are only accessed from the SocketWrapper's thread,
+    // so they don't have to have thread-safe public interfaces
+    private ClientMessageListener listener;
+    // ------ end section -------
 
     /**
      * Creates a handler that delegates to the given SocketWrapper.

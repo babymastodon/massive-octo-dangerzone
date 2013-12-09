@@ -3,8 +3,9 @@ package common;
 /**
  * To represent a color, Color contains three final ints that stand
  * for it's RGB values.
- * It is completely immutable and threadsafe.
  *
+ * Thread safety:
+ *      It is completely immutable and threadsafe.
  */
 public class Color {
     private final int red;

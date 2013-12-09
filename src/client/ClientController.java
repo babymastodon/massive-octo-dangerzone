@@ -8,13 +8,15 @@ import common.*;
  * Constructs a ClientGUI and a ClientSocketHandler and connects them
  * by adding them to each other as listeners.
  * 
- *  It is NOT thread-safe
+ * Thread safety:
+ *      Public interface is not thread safe.
  */
 public class ClientController {
 
     private final ClientSocketHandler socketHandler;
     private final SocketWrapper socketWrapper;
     private final ClientGUI gui;
+    private boolean runCalled;
 
     /**
      * Construct a ClientController that communicates to a server through
@@ -34,12 +36,19 @@ public class ClientController {
         // Connect the ClientGUI and the ClientSocketHandler together
         socketHandler.setServerMessageListener(gui);
         gui.setClientMessageListener(socketHandler);
+
+        runCalled = false;
     }
 
     /**
      * Execute the main loop.
+     *
+     * May only be called once.
      */
     public void run(){
+        assert runCalled == false;
+        runCalled = true;
+
         // Start the GUI
         gui.start();
 
