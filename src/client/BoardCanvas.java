@@ -2,22 +2,29 @@ package client;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
 import common.Whiteboard;
 
 public class BoardCanvas extends JPanel{
-    private Image drawingBuffer;
+    private BufferedImage drawingBuffer;
     
     public BoardCanvas(){
         super();
         this.setPreferredSize(new Dimension(Whiteboard.WIDTH, Whiteboard.HEIGHT));
+        this.drawingBuffer = Whiteboard.makeBuffer();
     }
     
-    public void setDrawingBuffer(Image newBuffer){
-        this.drawingBuffer = newBuffer;
+    /**
+     * Return a reference to the buffered image that is painted
+     * onto this component.
+     *
+     * Should only be modified inside the Swing event loop.
+     */
+    public BufferedImage getDrawingBuffer(){
+        return drawingBuffer;
     }
     
     /**

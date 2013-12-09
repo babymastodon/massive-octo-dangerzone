@@ -224,7 +224,7 @@ public class Whiteboard {
      * @return a BufferedImage with the same width and height as the
      * whiteboard, using the predefined type "TYPE_INT_RGB"
      */
-    public BufferedImage makeBuffer(){
+    public static BufferedImage makeBuffer(){
         final int TYPE_INT_RGB = 1; //looked up value in documentation
         BufferedImage bi = new BufferedImage(WIDTH, HEIGHT, TYPE_INT_RGB);
         return bi;
