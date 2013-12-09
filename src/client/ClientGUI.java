@@ -383,15 +383,18 @@ public class ClientGUI implements ServerMessageListener{
             Point lastPoint = new Point(lastX, board.HEIGHT-lastY);
             Point thisPoint = new Point(x, board.HEIGHT-y);
 
-            // draw immediately to the local board so that the
-            // user gets instant feedback
-            synchronized(this){
-                board.drawLine(lastPoint, thisPoint, color, penSize);
-            }
-            requestRefresh();
+            if (Whiteboard.checkPointInBounds(thisPoint) && Whiteboard.checkPointInBounds(lastPoint)){
+                // draw immediately to the local board so that the
+                // user gets instant feedback
+                synchronized(this){
+                    board.drawLine(lastPoint, thisPoint, color, penSize);
+                }
+                requestRefresh();
 
-            // send to the server
-            cmListener.drawLine(lastPoint, thisPoint, color, penSize);
+                // send to the server
+                cmListener.drawLine(lastPoint, thisPoint, color, penSize);
+            }
+
             lastX = x;
             lastY = y;
         }
