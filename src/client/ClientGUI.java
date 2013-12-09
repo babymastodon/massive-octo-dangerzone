@@ -1,6 +1,5 @@
 package client;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -8,15 +7,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.BasicStroke;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -73,7 +71,6 @@ public class ClientGUI implements ServerMessageListener{
 
     private int penSize=PEN_WIDTH;
     private Color color=BLACK;
-    // TODO: add pen size and color variables
     // ---- end section --------
 
     // ---- begin section ------
@@ -128,16 +125,14 @@ public class ClientGUI implements ServerMessageListener{
 
     @Override
     public void error(int code) {
-        //TODO: display these in the gui
-        System.err.println("Error number " + code);
         if (code == 100){
-            System.err.println("The username was already taken");
+            JOptionPane.showMessageDialog(null, "The username was already taken");
         }
         else if (code == 200){
-            System.err.println("There is no board with that id");
+            JOptionPane.showMessageDialog(null, "There is no board with that id");
         }
         else{
-            System.err.println("Unrecognized error");
+            JOptionPane.showMessageDialog(null, "Unrecognized error");
         }
     }
 
@@ -188,6 +183,10 @@ public class ClientGUI implements ServerMessageListener{
         System.exit(0);
     }
 
+    /**
+     * constructs login screen for user
+     * features Username textfield and login button to log in
+     */
     private void createLoginScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -216,6 +215,9 @@ public class ClientGUI implements ServerMessageListener{
         });
     }
 
+    /**
+     * displays log in screen
+     */
     private void showLoginScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -224,6 +226,9 @@ public class ClientGUI implements ServerMessageListener{
         });
     }
 
+    /**
+     * hides log in screen
+     */
     private void hideLoginScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -232,6 +237,10 @@ public class ClientGUI implements ServerMessageListener{
         });
     }
 
+    /**
+     * Constructs connect screen after user logged in
+     * features BoardID textfield and newBoard button that connects user to a specific or new board.
+     */
     private void createConnectScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -252,7 +261,7 @@ public class ClientGUI implements ServerMessageListener{
                             int boardID = Integer.parseInt(boardIDBox.getText());
                             cmListener.connectToBoard(boardID);
                         } catch (Exception ex) {
-                            // TODO: show a message?
+                            JOptionPane.showMessageDialog(null, "invalid boardID");
                         }
                     }
                 });
@@ -269,7 +278,10 @@ public class ClientGUI implements ServerMessageListener{
             }
         });
     }
-
+ 
+    /**
+     * displays connect screen
+     */
     private void showConnectScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -278,6 +290,9 @@ public class ClientGUI implements ServerMessageListener{
         });
     }
 
+    /**
+     * hides connect screen 
+     */
     private void hideConnectScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -285,7 +300,10 @@ public class ClientGUI implements ServerMessageListener{
             }
         });
     }
-
+    /**
+     * Constructs a canvas screen for user 
+     * Features buttons to draw in different colors, erase and exit the board
+     */
     private void createCanvasScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -326,7 +344,6 @@ public class ClientGUI implements ServerMessageListener{
                 canvasWindow.add(canvasWithUsers);
                 canvasWindow.add(drawAndErase);
 
-                // TODO: add the mouse listener and mouseMotionListener here
                 addDrawingController();
                 // Start a timer that repaints the canvas up to
                 // 1000/REFRESH_DELAY times per second if the UI has
@@ -345,7 +362,7 @@ public class ClientGUI implements ServerMessageListener{
             }
         });
     }
-    /*
+    /**
      * Add the mouse listener that supports the user's freehand drawing.
      */
     private void addDrawingController() {
@@ -354,7 +371,7 @@ public class ClientGUI implements ServerMessageListener{
         canvas.addMouseMotionListener(controller);
     }
 
-	/*
+	/**
      * DrawingController handles the user's freehand drawing.
      */
     private class DrawingController implements MouseListener, MouseMotionListener {
@@ -391,7 +408,13 @@ public class ClientGUI implements ServerMessageListener{
         public void mouseExited(MouseEvent e) { }
     }
     
-
+    /**
+     * creates color button with label, color, and pensize
+     * @param label
+     * @param color
+     * @param penSize
+     * @return ColorButton
+     */
     private JButton makeButton(String label, final Color col, final int penSi){
         JButton btn = new JButton(label);
         btn.setName(label);
@@ -404,7 +427,10 @@ public class ClientGUI implements ServerMessageListener{
         });
         return btn;
     }
-
+    /**
+     * creates exit button to exit the board
+     * @return ExitButton
+     */
     private JButton makeExitButton(){
         JButton btn = new JButton("EXIT");
         btn.setName("EXIT");
@@ -416,7 +442,9 @@ public class ClientGUI implements ServerMessageListener{
         });
         return btn;
     }
-
+    /**
+     * displays canvas screen
+     */
     private void showCanvasScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -425,6 +453,9 @@ public class ClientGUI implements ServerMessageListener{
         });
     }
 
+    /**
+     * hides canvas screen
+     */
     private void hideCanvasScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -433,6 +464,9 @@ public class ClientGUI implements ServerMessageListener{
         });
     }
 
+    /**
+     * request for refreshing the canvas
+     */
     private void requestRefresh(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -443,6 +477,9 @@ public class ClientGUI implements ServerMessageListener{
         });
     }
 
+    /**
+     * refreshes canvas elements
+     */
     private void refreshCanvasElements(){
         synchronized(ClientGUI.this){
             // show the connected users
