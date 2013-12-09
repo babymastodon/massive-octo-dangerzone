@@ -11,16 +11,29 @@ import common.*;
 import server.*;
 import client.*;
 
+/**
+ * Test suite for the overall socket layer (with ServerSocketHandler, Client
+ * SocketHandler, and SocketWrapper).
+ * For example, calling a function on one handler should get a response on
+ * the other handler. Use Mockito to create mock objects and introduce
+ * delay.
+ *
+ * Testing Strategy:
+ * Logging in gets a loginSuccess reply
+ * Errors get an error reply
+ * Connecting to a board gets a connectedToBoardSuccess message
+ * Updating a pixel gets an updatePixel message
+ * Updating users gets an updateUsersSuccess message
+ * DisconnectingFromBoardSuccess gets a disconnectFromBoardSuccess message
+ * Closing the server closes both the server and client connections
+ * Logging in gets a login message
+ * Connecting to a board gets a connect to board message
+ * Creating a new board gets a new board message
+ * Disconnect from a board calls disconnect from board
+ * Draw line calls drawLine()
+ * Closing a client closes both ends of the socket
+ */
 public class SocketLayerTests {
-
-    /**
-     * Integration tests for ServerSocketHandler,
-     * ClientSocketHandler, and SocketWrapper.
-     *
-     * Call a function on one handler, the response
-     * should arrive on the other one.
-     */
-
     // Port for TCP communication
     public static final int PORT = 1425;
 

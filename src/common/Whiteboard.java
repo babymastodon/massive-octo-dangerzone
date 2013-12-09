@@ -249,7 +249,7 @@ public class Whiteboard {
     }
 
     /**
-     * Equality
+     * Equality is determined by if all the colors at all the pixels are the same.
      *
      * @return true if colors are the same
      */

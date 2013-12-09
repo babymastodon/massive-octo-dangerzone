@@ -2,6 +2,7 @@ package tests;
 
 import static org.junit.Assert.*;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -10,6 +11,30 @@ import common.Color;
 import common.Point;
 import common.Whiteboard;
 
+/**
+ * Testing suite for Whiteboard.java. 
+ *
+ *
+ * Testing strategy:
+ * Create a new board and check that it is all white.
+ * A bunch of drawLine() tests:
+ *          draw a single point with no width.
+ *          draw a single point with some width
+ *          draw a vertical line with no width
+ *          draw a vertical line with a width
+ *          draw a line along a diagonal with integer slope and no width
+ *          draw a line along a diagonal with integer slope and a width
+ *          draw a line along a diagonal with non-integer slope and no width
+ *          draw a line along a diagonal with non-integer slope and a width
+ *          draw a line along a diagonal with a different non-integer slope and no width
+ * Test .equals() and .hashcode() methods
+ * Test .copy() method
+ * .getPixel() is tested in almost all the tests anyways.
+ * Test setPixel() only sets the color for one pixel
+ * Test makeBuffer() returns a BufferedImage of the right size and type
+ * Test copyPixelData() puts the data from the board into the bufferedImage
+ * 
+ */
 public class WhiteboardTests {
 
     /**
@@ -27,6 +52,10 @@ public class WhiteboardTests {
         }
     }
 
+    /**
+     * A bunch of tests for drawLine() coming up:
+     */
+    
     /**
      * Clicking a single point with just width 1 only colors in that point.
      * That point is returned in an array
@@ -306,5 +335,91 @@ public class WhiteboardTests {
                  }
              }
          }
+     }
+     
+     /**
+      * End of tests for drawLine()
+      */
+     
+     /**
+      * Test color equality and hashcode of whiteboards themselves.
+      */
+     @Test
+     public void testEquals(){
+         Whiteboard w1 = new Whiteboard();
+         Whiteboard w2 = new Whiteboard();
+         Whiteboard w3 = new Whiteboard();
+
+         w1.setPixel(new Point(1,2), new Color(1,2,3));
+         w2.setPixel(new Point(1,2), new Color(1,2,3));
+
+         assertEquals(true, w1.equals(w2));
+         assertEquals(false, w1.equals(w3));
+         assertEquals(false, w1.equals(""));
+         assertEquals(w1.hashCode(), w2.hashCode());
+     }
+     
+     /**
+      * Tests that a whiteboard can copy all the color data from a different whiteboard.
+      */
+     @Test
+     public void testCopy(){
+         Whiteboard w1 = new Whiteboard();
+         Color newColor = new Color(5, 12, 40);
+         w1.drawLine(new Point(5, 20), new Point(50, 9), newColor, 9);
+         Whiteboard w2 = new Whiteboard();
+         w2.copy(w1);
+         assertEquals(true, w1.equals(w2));
+     }
+
+     /**
+      * Test that setting a pixel to a specific color only sets the color for that pixel
+      */
+     @Test
+     public void testSetPixel(){
+         Whiteboard w1 = new Whiteboard();
+         Color newColor = new Color(5, 12, 40);
+         w1.setPixel(new Point(4, 197), newColor);
+         for (int i = 0; i < Whiteboard.WIDTH; i ++){
+             for (int j = 0; j < Whiteboard.HEIGHT; j ++){
+                 Point p = new Point(i, j);
+                 if (i == 4 && j == 197){
+                     assertEquals(true, w1.getPixel(p).equals(newColor));
+                 }
+                 else{
+                     assertEquals(true, w1.getPixel(p).equals(new Color()));
+                 }
+             }
+         }
+     }
+     
+     /**
+      * Test that makeBuffer() makes a BufferedImage of the right size and type.
+      */
+     @Test
+     public void testMakeBuffer(){
+         Whiteboard w1 = new Whiteboard();
+         BufferedImage bi = w1.makeBuffer();
+         assertEquals(600, bi.getHeight());
+         assertEquals(800, bi.getWidth());
+         assertEquals(1, bi.getType());
+         
+     }
+     
+     /**
+      * Test that copyPixelData() changes the data in bufferedImage.
+      */
+     @Test
+     public void testCopyPixelData(){
+         Whiteboard w1 = new Whiteboard();
+         BufferedImage bi = w1.makeBuffer();
+         Color newColor = new Color(1, 2, 3);
+         w1.setPixel(new Point(100, 200), newColor);
+         w1.copyPixelData(bi);
+         //the indices are weird because the index base is different for a whiteboard
+         //and a buffered image
+         assertEquals(3, (bi.getTile(0, 0).getSample(100, 399, 2)));
+         assertEquals(2, (bi.getTile(0, 0).getSample(100, 399, 1)));
+         assertEquals(1, (bi.getTile(0, 0).getSample(100, 399, 0)));
      }
 }
