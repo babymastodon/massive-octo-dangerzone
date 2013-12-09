@@ -9,6 +9,11 @@ import common.*;
  * Listens for incoming client connections. For each new client
  * connection, it constructs a new ServerSocketHandler, a new SessionController,
  * and connects them together by adding them to each other as listeners.
+ *
+ * Usage:
+ *      The methods of this class must be called in the following order:
+ *          - ServerController()
+ *          - run()
  * 
  * Thread safety:
  *      Public interface is not thread safe.

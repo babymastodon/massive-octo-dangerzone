@@ -1,4 +1,4 @@
-package tests;
+package tests.common;
 
 import static org.junit.Assert.*;
 
@@ -28,7 +28,6 @@ import common.Whiteboard;
  *          draw a line along a diagonal with non-integer slope and a width
  *          draw a line along a diagonal with a different non-integer slope and no width
  * Test .equals() and .hashcode() methods
- * Test .copy() method
  * .getPixel() is tested in almost all the tests anyways.
  * Test setPixel() only sets the color for one pixel
  * Test makeBuffer() returns a BufferedImage of the right size and type
@@ -360,19 +359,6 @@ public class WhiteboardTests {
      }
      
      /**
-      * Tests that a whiteboard can copy all the color data from a different whiteboard.
-      */
-     @Test
-     public void testCopy(){
-         Whiteboard w1 = new Whiteboard();
-         Color newColor = new Color(5, 12, 40);
-         w1.drawLine(new Point(5, 20), new Point(50, 9), newColor, 9);
-         Whiteboard w2 = new Whiteboard();
-         w2.copy(w1);
-         assertEquals(true, w1.equals(w2));
-     }
-
-     /**
       * Test that setting a pixel to a specific color only sets the color for that pixel
       */
      @Test
@@ -398,8 +384,7 @@ public class WhiteboardTests {
       */
      @Test
      public void testMakeBuffer(){
-         Whiteboard w1 = new Whiteboard();
-         BufferedImage bi = w1.makeBuffer();
+         BufferedImage bi = Whiteboard.makeBuffer();
          assertEquals(600, bi.getHeight());
          assertEquals(800, bi.getWidth());
          assertEquals(1, bi.getType());
@@ -412,7 +397,7 @@ public class WhiteboardTests {
      @Test
      public void testCopyPixelData(){
          Whiteboard w1 = new Whiteboard();
-         BufferedImage bi = w1.makeBuffer();
+         BufferedImage bi = Whiteboard.makeBuffer();
          Color newColor = new Color(1, 2, 3);
          w1.setPixel(new Point(100, 200), newColor);
          w1.copyPixelData(bi);

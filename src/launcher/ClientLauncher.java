@@ -15,6 +15,7 @@ import client.*;
  */
 public class ClientLauncher {
     public static void main(String[] args){
+        // parse the command line arguments
         int port = 0;
         String host = null;
         try {
@@ -25,6 +26,7 @@ public class ClientLauncher {
             port = 7495;
         }
 
+        // connect to the remote host
         Socket s = null;
         try {
             s = new Socket(host, port);
@@ -33,6 +35,7 @@ public class ClientLauncher {
             return;
         }
 
+        // Construct and run the ClientController
         ClientController c = new ClientController(s);
         System.out.println("Connected to host " + host + ":" + port);
         c.run();

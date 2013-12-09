@@ -16,10 +16,10 @@ import common.Whiteboard;
  *
  */
 public class WhiteboardStruct {
-    private Whiteboard board;
-    private List<ServerMessageListener> listeners;
-    private List<String> users;
-    private int id;
+    private final Whiteboard board;
+    private final List<ServerMessageListener> listeners;
+    private final List<String> users;
+    private final int id;
     /**
      * Contruct with the given variables
      * @param board: the whiteboard that has all the drawing data

@@ -1,6 +1,5 @@
 package server;
 
-import java.io.*;
 import java.util.*;
 
 import common.*;
@@ -19,6 +18,13 @@ import static common.SocketState.*;
  * are only sent or received in the right  states.
  * If a socket throws an error while writing, calls ServerMessageListener.serverClose()
  * Call listener.clientClose() if error while reading.
+ *
+ * Usage:
+ *      The methods of this class must be called in the following order:
+ *          - ServerSocketHandler()
+ *          - setClientMessageListener()
+ *          - (start the socket wrapper)
+ *          - any other function
  *
  * Thread safety: 
  *      Public interface is thread safe.
@@ -87,6 +93,9 @@ public class ServerSocketHandler implements ServerMessageListener{
         this.listener = l;
     }
 
+    /**
+     * @see ServerMessageListener
+     */
     @Override
     public synchronized void loginSuccess() {
         if (serverInterfaceOpen){
@@ -98,6 +107,9 @@ public class ServerSocketHandler implements ServerMessageListener{
         }
     }
 
+    /**
+     * @see ServerMessageListener
+     */
     @Override
     public synchronized void error(int code) {
         if (serverInterfaceOpen){
@@ -117,6 +129,9 @@ public class ServerSocketHandler implements ServerMessageListener{
         }
     }
 
+    /**
+     * @see ServerMessageListener
+     */
     @Override
     public synchronized void connectToBoardSuccess(int id, List<String> users, Whiteboard data) {
         if (serverInterfaceOpen){
@@ -150,6 +165,9 @@ public class ServerSocketHandler implements ServerMessageListener{
         }
     }
 
+    /**
+     * @see ServerMessageListener
+     */
     @Override
     public synchronized void updatePixel(Point point, Color color) {
         if (serverInterfaceOpen){
@@ -167,6 +185,9 @@ public class ServerSocketHandler implements ServerMessageListener{
         }
     }
 
+    /**
+     * @see ServerMessageListener
+     */
     @Override
     public synchronized void updateUsers(List<String> users) {
         if (serverInterfaceOpen){
@@ -185,6 +206,9 @@ public class ServerSocketHandler implements ServerMessageListener{
         }
     }
 
+    /**
+     * @see ServerMessageListener
+     */
     @Override
     public synchronized void disconnectFromBoardSuccess() {
         if (serverInterfaceOpen){
@@ -196,6 +220,9 @@ public class ServerSocketHandler implements ServerMessageListener{
         }
     }
 
+    /**
+     * @see ServerMessageListener
+     */
     @Override
     public synchronized void serverClose() {
         if (serverInterfaceOpen){

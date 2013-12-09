@@ -20,9 +20,17 @@ import java.net.*;
  * Client must set the listener with setSocketWrapperListener() before
  *      calling any other functions.
  *
+ * Usage:
+ *      The methods of this class must be called in the following order:
+ *          - SocketWrapper()
+ *          - setSocketWrapperListener()
+ *          - start()
+ *          - any other function
  *
  * Thread safety:
- *      Public interface is synchronized and therefore thread safe.
+ *      Public interface is synchronized. The SocketWrapperListener
+ *          may be shared between threads, but it is assumed to be thread-safe,
+ *          and it may only be set once by setSocketWrapperListener().
  */
 public class SocketWrapper{
 

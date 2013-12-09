@@ -1,11 +1,10 @@
 package common;
 
-import java.io.*;
-
 /**
  * Implements callback functions for the SocketWrapper.
  *
- * implementations are not thread safe unless otherwise specified.
+ * Thread safety:
+ *      Public interface may or may not be thread safe.
  */
 public interface SocketWrapperListener{
 
