@@ -364,15 +364,19 @@ public class ClientGUI implements ServerMessageListener{
         // draw a line segment from that last point to the point of the next mouse event.
         private int lastX, lastY; 
 
-        /*
-         * When mouse button is pressed down, start drawing.
+        /**
+         * When mouse button is pressed down, draw a single point.
          */
         public void mousePressed(MouseEvent e) {
             lastX = e.getX();
             lastY = e.getY();
+
+            Point thisPoint = new Point(lastX, board.HEIGHT-lastY);
+
+            drawLine(thisPoint, thisPoint);
         }
 
-        /*
+        /**
          * When mouse moves while a button is pressed down,
          * draw a line segment.
          */
@@ -383,6 +387,17 @@ public class ClientGUI implements ServerMessageListener{
             Point lastPoint = new Point(lastX, board.HEIGHT-lastY);
             Point thisPoint = new Point(x, board.HEIGHT-y);
 
+            drawLine(lastPoint, thisPoint);
+
+            lastX = x;
+            lastY = y;
+        }
+
+        /**
+         * Draw a line on the local whiteboard, and send a drawLine
+         * message to the server.
+         */
+        private void drawLine(Point lastPoint, Point thisPoint){
             if (Whiteboard.checkPointInBounds(thisPoint) && Whiteboard.checkPointInBounds(lastPoint)){
                 // draw immediately to the local board so that the
                 // user gets instant feedback
@@ -394,9 +409,6 @@ public class ClientGUI implements ServerMessageListener{
                 // send to the server
                 cmListener.drawLine(lastPoint, thisPoint, color, penSize);
             }
-
-            lastX = x;
-            lastY = y;
         }
 
         // Ignore all these other mouse events.
