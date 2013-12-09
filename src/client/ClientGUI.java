@@ -71,7 +71,7 @@ public class ClientGUI implements ServerMessageListener{
 
     private boolean shouldRefreshCanvas;
 
-    private int penSize;
+    private int penSize=PEN_WIDTH;
     private Color color=BLACK;
     // TODO: add pen size and color variables
     // ---- end section --------
@@ -411,7 +411,7 @@ public class ClientGUI implements ServerMessageListener{
         btn.setPreferredSize(new Dimension (100,100));
         btn.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                // TODO: do something
+                cmListener.disconnectFromBoard();
             }
         });
         return btn;
