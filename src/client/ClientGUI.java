@@ -54,7 +54,7 @@ public class ClientGUI implements ServerMessageListener{
     private Whiteboard board;
     private int boardID;
     // ---- end section --------
-    
+
     // ---- begin section ------
     // variables in this section may only be accessed from the
     // Java Swing thread
@@ -83,11 +83,11 @@ public class ClientGUI implements ServerMessageListener{
     private static final Color RED = new Color(230,20,20);
     private static final Color BLUE = new Color(20,20,230);
     private static final Color GREEN = new Color(20,230,20);
-    private static int ERASER_WIDTH = 10;
-    private static int PEN_WIDTH = 5;
-    private static int REFRESH_DELAY = 100;
+    private static final int ERASER_WIDTH = 10;
+    private static final int PEN_WIDTH = 5;
+    private static final int REFRESH_DELAY = 20;
     // ---- end section --------
-    
+
 
     /**
      * Initialize class members. Make the GUI elements, but 
@@ -98,7 +98,7 @@ public class ClientGUI implements ServerMessageListener{
         createConnectScreen();
         createCanvasScreen();
     }
-    
+
     /**
      * Use the provided listener object to send messages to the server.
      * @param l: the listener used to send messages.
@@ -328,6 +328,7 @@ public class ClientGUI implements ServerMessageListener{
 
                 // TODO: add the mouse listener and mouseMotionListener here
                 addDrawingController();
+
                 // Start a timer that repaints the canvas up to
                 // 1000/REFRESH_DELAY times per second if the UI has
                 // changed
@@ -339,6 +340,7 @@ public class ClientGUI implements ServerMessageListener{
                         }
                     }
                 }).start();
+
                 canvasWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 canvasWindow.pack();
                 canvasWindow.setMinimumSize(canvasWindow.getSize());
@@ -354,7 +356,7 @@ public class ClientGUI implements ServerMessageListener{
         canvas.addMouseMotionListener(controller);
     }
 
-	/*
+    /*
      * DrawingController handles the user's freehand drawing.
      */
     private class DrawingController implements MouseListener, MouseMotionListener {
@@ -378,7 +380,18 @@ public class ClientGUI implements ServerMessageListener{
             int x = e.getX();
             int y = e.getY();
             
-            cmListener.drawLine(new Point(lastX, board.HEIGHT-lastY), new Point(x,board.HEIGHT-y), color, penSize);
+            Point lastPoint = new Point(lastX, board.HEIGHT-lastY);
+            Point thisPoint = new Point(x, board.HEIGHT-y);
+
+            // draw immediately to the local board so that the
+            // user gets instant feedback
+            synchronized(this){
+                board.drawLine(lastPoint, thisPoint, color, penSize);
+            }
+            requestRefresh();
+
+            // send to the server
+            cmListener.drawLine(lastPoint, thisPoint, color, penSize);
             lastX = x;
             lastY = y;
         }
@@ -390,7 +403,7 @@ public class ClientGUI implements ServerMessageListener{
         public void mouseEntered(MouseEvent e) { }
         public void mouseExited(MouseEvent e) { }
     }
-    
+
 
     private JButton makeButton(String label, final Color col, final int penSi){
         JButton btn = new JButton(label);
@@ -398,8 +411,8 @@ public class ClientGUI implements ServerMessageListener{
         btn.setPreferredSize(new Dimension (100,100));
         btn.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-            	color=col;
-            	penSize=penSi;
+                color=col;
+                penSize=penSi;
             }
         });
         return btn;
