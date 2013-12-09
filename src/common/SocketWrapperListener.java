@@ -23,7 +23,7 @@ public interface SocketWrapperListener{
      *
      * @param e the Exception that was raised
      */
-    public void onReadError(IOException e);
+    public void onReadError(Exception e);
 
     /**
      * This function gets executed when the socket
@@ -39,5 +39,5 @@ public interface SocketWrapperListener{
      *
      * @param e the Exception that was raised
      */
-    public void onWriteError(IOException e);
+    public void onWriteError(Exception e);
 }
