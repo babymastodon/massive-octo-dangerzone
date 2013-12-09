@@ -5,9 +5,13 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.BasicStroke;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -17,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+
 
 import common.*;
 
@@ -66,6 +71,8 @@ public class ClientGUI implements ServerMessageListener{
 
     private boolean shouldRefreshCanvas;
 
+    private int penSize;
+    private Color color=BLACK;
     // TODO: add pen size and color variables
     // ---- end section --------
 
@@ -320,7 +327,7 @@ public class ClientGUI implements ServerMessageListener{
                 canvasWindow.add(drawAndErase);
 
                 // TODO: add the mouse listener and mouseMotionListener here
-
+                addDrawingController();
                 // Start a timer that repaints the canvas up to
                 // 1000/REFRESH_DELAY times per second if the UI has
                 // changed
@@ -332,21 +339,67 @@ public class ClientGUI implements ServerMessageListener{
                         }
                     }
                 }).start();
-
                 canvasWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 canvasWindow.pack();
                 canvasWindow.setMinimumSize(canvasWindow.getSize());
             }
         });
     }
+    /*
+     * Add the mouse listener that supports the user's freehand drawing.
+     */
+    private void addDrawingController() {
+        DrawingController controller = new DrawingController();
+        canvas.addMouseListener(controller);
+        canvas.addMouseMotionListener(controller);
+    }
 
-    private JButton makeButton(String label, Color color, int penSize){
+	/*
+     * DrawingController handles the user's freehand drawing.
+     */
+    private class DrawingController implements MouseListener, MouseMotionListener {
+        // store the coordinates of the last mouse event, so we can
+        // draw a line segment from that last point to the point of the next mouse event.
+        private int lastX, lastY; 
+
+        /*
+         * When mouse button is pressed down, start drawing.
+         */
+        public void mousePressed(MouseEvent e) {
+            lastX = e.getX();
+            lastY = e.getY();
+        }
+
+        /*
+         * When mouse moves while a button is pressed down,
+         * draw a line segment.
+         */
+        public void mouseDragged(MouseEvent e) {
+            int x = e.getX();
+            int y = e.getY();
+            
+            cmListener.drawLine(new Point(lastX, board.HEIGHT-lastY), new Point(x,board.HEIGHT-y), color, penSize);
+            lastX = x;
+            lastY = y;
+        }
+
+        // Ignore all these other mouse events.
+        public void mouseMoved(MouseEvent e) { }
+        public void mouseClicked(MouseEvent e) { }
+        public void mouseReleased(MouseEvent e) { }
+        public void mouseEntered(MouseEvent e) { }
+        public void mouseExited(MouseEvent e) { }
+    }
+    
+
+    private JButton makeButton(String label, final Color col, final int penSi){
         JButton btn = new JButton(label);
         btn.setName(label);
         btn.setPreferredSize(new Dimension (100,100));
         btn.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                // TODO: do something
+            	color=col;
+            	penSize=penSi;
             }
         });
         return btn;
