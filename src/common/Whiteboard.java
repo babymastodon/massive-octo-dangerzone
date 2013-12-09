@@ -173,8 +173,11 @@ public class Whiteboard {
         for(int i = (int)-sideLength; i < Math.ceil(sideLength); i ++){
             for(int j = (int)-sideLength; j < Math.ceil(sideLength); j ++){
                 if (checkPointInBounds(new Point(x+i, y + j))){
+                    Color oldColor = board[x+i][y+j];
                     board[x+i][y+j] = color;
-                    changedPoints.add(new Point(x+i, y+j));
+                    if (!color.equals(oldColor)){
+                        changedPoints.add(new Point(x+i, y+j));
+                    }
                 }
             }
         }
