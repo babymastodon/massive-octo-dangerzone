@@ -130,25 +130,41 @@ public class ClientGUI implements ServerMessageListener{
         showLoginScreen();
     }
 
+    /**
+     * Show the "connect to board" screen when the login succeeds.
+     */
     @Override
     public void loginSuccess() {
-        hideLoginScreen();
         showConnectScreen();
     }
 
+    /**
+     * Display a dialog box when an error occurs.
+     */
     @Override
     public void error(int code) {
         if (code == 100){
+            // If login failure, show the login screen
             JOptionPane.showMessageDialog(null, "The username was already taken");
+            showLoginScreen();
         }
         else if (code == 200){
+            // If connection failure, show the connection screen
             JOptionPane.showMessageDialog(null, "There is no board with that id");
+            showConnectScreen();
         }
         else{
+            // otherwise, exit
             JOptionPane.showMessageDialog(null, "Unrecognized error");
+            cmListener.clientClose();
+            System.exit(0);
         }
     }
 
+    /**
+     * Display the drawing screen and load the whiteboard data after
+     * successful connection to a whiteboard.
+     */
     @Override
     public void connectToBoardSuccess(int id, List<String> users,
             Whiteboard data) {
@@ -158,11 +174,13 @@ public class ClientGUI implements ServerMessageListener{
             this.boardID = id;
         }
 
-        hideConnectScreen();
         showCanvasScreen();
         requestRefresh();
     }
 
+    /**
+     * Update the whiteboard when the server sends and updatePixel message.
+     */
     @Override
     public void updatePixel(Point point, Color color) {
         synchronized(this){
@@ -171,6 +189,9 @@ public class ClientGUI implements ServerMessageListener{
         requestRefresh();
     }
 
+    /**
+     * Update the user label when the server sends and updateUsers message.
+     */
     @Override
     public void updateUsers(List<String> users) {
         synchronized(this){
@@ -179,6 +200,10 @@ public class ClientGUI implements ServerMessageListener{
         requestRefresh();
     }
 
+    /**
+     * Show the "connect to board" screen after the server has acknowledged
+     * the disconnect from a whiteboard.
+     */
     @Override
     public void disconnectFromBoardSuccess() {
         synchronized(this){
@@ -186,10 +211,12 @@ public class ClientGUI implements ServerMessageListener{
             this.boardID = -1;
             this.users = new ArrayList<String>();
         }
-        hideCanvasScreen();
         showConnectScreen();
     }
 
+    /**
+     * Exit the program when the server disconnects.
+     */
     @Override
     public void serverClose() {
         cmListener.clientClose();
@@ -217,6 +244,7 @@ public class ClientGUI implements ServerMessageListener{
                         username = usernameBox.getText();
                         if (!username.isEmpty()) {
                             cmListener.login(username);
+                            hideLoginScreen();
                         }
                     }
                 });
@@ -257,7 +285,7 @@ public class ClientGUI implements ServerMessageListener{
     private void createConnectScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                connectWindow = new JFrame("Login Page");
+                connectWindow = new JFrame("Create or Join a Board");
                 connectWindow.setLayout(new BoxLayout(connectWindow.getContentPane(), BoxLayout.X_AXIS));
                 final JLabel boardIDLabel = new JLabel("Board ID:");
                 final JTextField boardIDBox = new JTextField(20);
@@ -273,6 +301,7 @@ public class ClientGUI implements ServerMessageListener{
                         try{
                             int boardID = Integer.parseInt(boardIDBox.getText());
                             cmListener.connectToBoard(boardID);
+                            hideConnectScreen();
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(null, "invalid boardID");
                         }
@@ -282,6 +311,7 @@ public class ClientGUI implements ServerMessageListener{
                 newBoardButton.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e){
                         cmListener.newBoard();
+                        hideConnectScreen();
                     }
                 });
 
@@ -473,12 +503,13 @@ public class ClientGUI implements ServerMessageListener{
      * @return ExitButton
      */
     private JButton makeExitButton(){
-        JButton btn = new JButton("EXIT");
+        JButton btn = new JButton("Leave Board");
         btn.setName("EXIT");
         btn.setPreferredSize(new Dimension (100,100));
         btn.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent e) {
                 cmListener.disconnectFromBoard();
+                hideCanvasScreen();
             }
         });
         return btn;
