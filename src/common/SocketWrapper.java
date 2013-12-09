@@ -29,14 +29,20 @@ public class SocketWrapper{
     private final Socket socket;
     private SocketWrapperListener listener;
     private boolean running;
+    private boolean debug;
 
     /**
      * Construct with the given, open socket.
      *
      * @param s an open socket
+     * @param debug set True to print debug messages to stdout
      */
-    public SocketWrapper(Socket s){
+    public SocketWrapper(Socket s, boolean debug){
         this.socket = s;
+        this.debug = debug;
+    }
+    public SocketWrapper(Socket s){
+        this(s, false);
     }
 
     /**
@@ -66,7 +72,9 @@ public class SocketWrapper{
                         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                         for (String line = in.readLine(); line != null; line = in.readLine()) {
-                            System.out.println("receiving: " + line.substring(0, Math.min(line.length(), 100)));
+                            if (debug){
+                                System.out.println("receiving: " + line.substring(0, Math.min(line.length(), 100)));
+                            }
                             listener.onReadLine(line.trim());
                         }
                     } catch (Exception e){
@@ -95,7 +103,9 @@ public class SocketWrapper{
         assert listener != null;
 
         try {
-            System.out.println("sending: " + line.substring(0, Math.min(line.length(), 100)));
+            if (debug){
+                System.out.println("sending: " + line.substring(0, Math.min(line.length(), 100)));
+            }
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             out.println(line);
         } catch (IOException e){

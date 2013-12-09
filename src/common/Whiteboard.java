@@ -184,7 +184,7 @@ public class Whiteboard {
         return coloredPoints;
     }
 
-    private boolean checkPointInBounds(Point point){
+    public static boolean checkPointInBounds(Point point){
         return point.getX() < WIDTH && point.getX() >= 0 && point.getY() < HEIGHT && point.getY() >= 0;
     }
 
