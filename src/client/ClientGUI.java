@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import common.*;
 
@@ -63,6 +64,8 @@ public class ClientGUI implements ServerMessageListener{
     private JLabel usersLabel;
     private JLabel boardIDLabel;
 
+    private boolean shouldRefreshCanvas;
+
     // TODO: add pen size and color variables
     // ---- end section --------
 
@@ -75,6 +78,7 @@ public class ClientGUI implements ServerMessageListener{
     private static final Color GREEN = new Color(20,230,20);
     private static int ERASER_WIDTH = 10;
     private static int PEN_WIDTH = 5;
+    private static int REFRESH_DELAY = 100;
     // ---- end section --------
     
 
@@ -141,7 +145,7 @@ public class ClientGUI implements ServerMessageListener{
 
         hideConnectScreen();
         showCanvasScreen();
-        refreshCanvasElements();
+        requestRefresh();
     }
 
     @Override
@@ -149,7 +153,7 @@ public class ClientGUI implements ServerMessageListener{
         synchronized(this){
             this.board.setPixel(point, color);
         }
-        refreshCanvasElements();
+        requestRefresh();
     }
 
     @Override
@@ -157,7 +161,7 @@ public class ClientGUI implements ServerMessageListener{
         synchronized(this){
             this.users = new ArrayList<String>(users);
         }
-        refreshCanvasElements();
+        requestRefresh();
     }
 
     @Override
@@ -173,10 +177,6 @@ public class ClientGUI implements ServerMessageListener{
 
     @Override
     public void serverClose() {
-        this.board = null;
-        this.boardID = -1;
-        this.users = new ArrayList<String>();
-
         cmListener.clientClose();
         System.exit(0);
     }
@@ -321,6 +321,18 @@ public class ClientGUI implements ServerMessageListener{
 
                 // TODO: add the mouse listener and mouseMotionListener here
 
+                // Start a timer that repaints the canvas up to
+                // 1000/REFRESH_DELAY times per second if the UI has
+                // changed
+                new Timer(REFRESH_DELAY, new ActionListener(){
+                    public void actionPerformed(ActionEvent e) {
+                        if (shouldRefreshCanvas){
+                            shouldRefreshCanvas = false;
+                            refreshCanvasElements();
+                        }
+                    }
+                }).start();
+
                 canvasWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 canvasWindow.pack();
                 canvasWindow.setMinimumSize(canvasWindow.getSize());
@@ -368,23 +380,34 @@ public class ClientGUI implements ServerMessageListener{
         });
     }
 
-    private void refreshCanvasElements(){
+    private void requestRefresh(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                // show the connected users
-                StringBuilder ub = new StringBuilder();
-                ub.append("Connected users: ");
-                for (String username: users){
-                    ub.append(username).append(" ");
+                synchronized(ClientGUI.this){
+                    shouldRefreshCanvas = true;
                 }
-                usersLabel.setText(ub.toString());
-
-                // show the current board id
-                boardIDLabel.setText("Board ID: " + boardID);
-
-                // update the image shown in the canvas
-                board.copyPixelData(canvas.getDrawingBuffer());
             }
         });
+    }
+
+    private void refreshCanvasElements(){
+        synchronized(ClientGUI.this){
+            // show the connected users
+            StringBuilder ub = new StringBuilder();
+            ub.append("Connected users: ");
+            for (String username: users){
+                ub.append(username).append(" ");
+            }
+            usersLabel.setText(ub.toString());
+
+            // show the current board id
+            boardIDLabel.setText("Board ID: " + boardID);
+
+            // update the image shown in the canvas
+            board.copyPixelData(canvas.getDrawingBuffer());
+
+            // request repaint
+            canvasWindow.repaint();
+        }
     }
 }
