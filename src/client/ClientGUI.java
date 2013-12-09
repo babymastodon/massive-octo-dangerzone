@@ -83,7 +83,7 @@ public class ClientGUI implements ServerMessageListener{
     private static final Color RED = new Color(230,20,20);
     private static final Color BLUE = new Color(20,20,230);
     private static final Color GREEN = new Color(20,230,20);
-    private static final int ERASER_WIDTH = 10;
+    private static final int ERASER_WIDTH = 40;
     private static final int PEN_WIDTH = 5;
     private static final int REFRESH_DELAY = 20;
     // ---- end section --------
