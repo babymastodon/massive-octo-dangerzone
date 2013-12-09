@@ -6,12 +6,26 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+
+/**
+ * A two-dimensional bitmap of pixels representing an image.
+ *
+ * The lower left-hand corner is at the (0,0) index by convention
+ * (standard cartesian coordinates).
+ *
+ * Thread safety:
+ *      Not thread safe. Multi-threaded access to this object must be
+ *          protected by a lock.
+ */
 public class Whiteboard {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
 
     private final Color[][] board = new Color[WIDTH][HEIGHT];
 
+    /**
+     * Construct a blank (white) board
+     */
     public Whiteboard(){
         initializeBoard();
     }
@@ -28,25 +42,12 @@ public class Whiteboard {
     }
 
     /**
-     * Copy the pixels in the given whiteboard into this whiteboard.
-     * The other whiteboard is not locked during this process
-     * @param other: the other whiteboard we are copying from
-     */
-    public void copy(Whiteboard other){
-        for (int i = 0; i < WIDTH; i ++){
-            for (int j = 0; j < HEIGHT; j ++){
-                Point p = new Point(i, j);
-                Color c = other.getPixel(p);
-                this.setPixel(p, c);
-            }
-        }
-    }
-
-    /**
      * Find all the points on the line segment between and including
      * point1 and point2 and draw them with the specified color.
+     *
      * Note that having point1 and point2 be the same means one should
      * should just draw that point.
+     *
      * @param point1: one end of the line segment
      * @param point2: the other end of the line segment
      * @param color: the color to make the line
@@ -54,7 +55,6 @@ public class Whiteboard {
      * point.
      * @return an array of all the points in the modified line segment.
      */
-
     public List<Point> drawLine(Point point1, Point point2, Color color, int width){
         assert checkPointInBounds(point1);
         assert checkPointInBounds(point2);
@@ -151,6 +151,8 @@ public class Whiteboard {
     }
     
     /**
+     * Draw a square of pixels centered at a point.
+     *
      * if sideLength == 0, just do that point.
      * @param center
      * @param sideLength
@@ -184,6 +186,13 @@ public class Whiteboard {
         return coloredPoints;
     }
 
+    /**
+     * Return whether the point falls within the boundary of
+     * a whiteboard.
+     *
+     * @param point the point in question
+     * @return true if the point is inside a Whiteboard boundary
+     */
     public static boolean checkPointInBounds(Point point){
         return point.getX() < WIDTH && point.getX() >= 0 && point.getY() < HEIGHT && point.getY() >= 0;
     }

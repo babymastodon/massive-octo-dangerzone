@@ -21,6 +21,12 @@ import static common.SocketState.*;
  * None of the methods should throw exceptions. Instead, call clientClose() if
  * something bad happens.
  *
+ * Usage:
+ *      The methods of this class must be called in the following order:
+ *          - SessionHandler()
+ *          - setServerMessageListener()
+ *          - any other function
+ *
  * Rep invariant:
  *      - connectedBoardStruct is not null when in the CONNECTED or
  *        DISCONNECT_PENDING state

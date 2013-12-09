@@ -7,6 +7,11 @@ import common.*;
 /**
  * Constructs a ClientGUI and a ClientSocketHandler and connects them
  * by adding them to each other as listeners.
+ *
+ * Usage:
+ *      The methods of this class must be called in the following order:
+ *          - ClientController()
+ *          - run()
  * 
  * Thread safety:
  *      Public interface is not thread safe.

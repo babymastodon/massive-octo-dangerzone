@@ -14,6 +14,7 @@ import server.*;
  */
 public class ServerLauncher {
     public static void main(String[] args){
+        // parse the command line arguments
         int port = 0;
         try {
             port = Integer.parseInt(args[0]);
@@ -21,6 +22,7 @@ public class ServerLauncher {
             port = 7495;
         }
 
+        // connect to the remote host
         ServerSocket s = null;
         try {
             s = new ServerSocket(port);
@@ -29,6 +31,7 @@ public class ServerLauncher {
             return;
         }
 
+        // construct and run the ServerController
         ServerController c = new ServerController(s);
         System.out.println("Server running on port " + port);
         c.run();

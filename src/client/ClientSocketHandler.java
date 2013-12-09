@@ -16,6 +16,13 @@ import static common.SocketState.*;
  * If a socket throws an error while writing to the stream, calls ServerMessageListener.serverClose()
  * Call clientClose() if error while reading from the stream.
  *
+ * Usage:
+ *      The methods of this class must be called in the following order:
+ *          - ClientSocketHandler()
+ *          - setServerMessageListener()
+ *          - (start the socket wrapper)
+ *          - any other function
+ *
  * Thread safety: 
  *      Public interface is thread safe.
  *      This is achieved by locking the ServerSocketHandler before
@@ -83,6 +90,9 @@ public class ClientSocketHandler implements ClientMessageListener{
         this.listener = l;
     }
 
+    /**
+     * @see ClientMessageListener
+     */
     @Override
     public synchronized void login(String username) {
         if (clientInterfaceOpen){
@@ -94,6 +104,9 @@ public class ClientSocketHandler implements ClientMessageListener{
         }
     }
 
+    /**
+     * @see ClientMessageListener
+     */
     @Override
     public synchronized void connectToBoard(int id) {
         if (clientInterfaceOpen){
@@ -105,6 +118,9 @@ public class ClientSocketHandler implements ClientMessageListener{
         }
     }
 
+    /**
+     * @see ClientMessageListener
+     */
     @Override
     public synchronized void newBoard() {
         if (clientInterfaceOpen){
@@ -116,6 +132,9 @@ public class ClientSocketHandler implements ClientMessageListener{
         }
     }
 
+    /**
+     * @see ClientMessageListener
+     */
     @Override
     public synchronized void disconnectFromBoard() {
         if (clientInterfaceOpen){
@@ -127,6 +146,9 @@ public class ClientSocketHandler implements ClientMessageListener{
         }
     }
 
+    /**
+     * @see ClientMessageListener
+     */
     @Override
     public synchronized void drawLine(Point p1, Point p2, Color color, int width) {
         if (clientInterfaceOpen){
@@ -148,6 +170,9 @@ public class ClientSocketHandler implements ClientMessageListener{
         }
     }
 
+    /**
+     * @see ClientMessageListener
+     */
     @Override
     public synchronized void clientClose() {
         if (clientInterfaceOpen){
@@ -254,6 +279,13 @@ public class ClientSocketHandler implements ClientMessageListener{
         listener.serverClose();
     }
 
+    /**
+     * Deserialize the whiteboard from the ASCII protocol.
+     *
+     * Numbers are given in hex format (2 chars per number).
+     * Each pixel is 3 numbers concatenated together, eg: ff3324.
+     * Pixels are printed left-to-right, bottom-to-top.
+     */
     private Whiteboard _parseWhiteboard(String data){
         Whiteboard board = new Whiteboard();
 

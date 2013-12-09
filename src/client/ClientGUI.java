@@ -27,13 +27,23 @@ import common.*;
 /**
  * Stores the list of all usernames currently connected to the internal
  * Whiteboard object.
+ *
  * Stores the state of the board in previously mentioned Whiteboard object.
  * Refreshes the contents of the whiteboard onto the screen at regular
- * intervals using the graphics2d.drawImage(BufferedImage, null, 0, 0) function
- * 
- * When serverClose() is called, close the GUI if it isn't already closed.
- * When the GUI is closed, call clientClose() of the ClientMessageListener
- * Instead of throwing exceptions, call serverClose()
+ * intervals using the graphics.drawImage(BufferedImage, null, 0, 0) function
+ *
+ * Receives messages from the server via the ServerMessageListener interface.
+ *
+ * Sends messages to the server by calling functions on a ClientMessageListener
+ * object, which must be connected via the SetClientMessageListener() function
+ * immediately after construction.
+ *
+ * Usage:
+ *      The methods of this class must be called in the following order:
+ *          - ClientGUI()
+ *          - setClientMessageListener()
+ *          - start()
+ *          - any other function
  *
  * Thread safety:
  *      Public interface is not thread safe. Should only be accessed
@@ -52,6 +62,7 @@ public class ClientGUI implements ServerMessageListener{
     private Whiteboard board;
     private int boardID;
     // ---- end section --------
+
 
     // ---- begin section ------
     // variables in this section may only be accessed from the
@@ -72,6 +83,7 @@ public class ClientGUI implements ServerMessageListener{
     private int penSize=PEN_WIDTH;
     private Color color=BLACK;
     // ---- end section --------
+
 
     // ---- begin section ------
     // Constants for the user interface.
@@ -98,6 +110,7 @@ public class ClientGUI implements ServerMessageListener{
 
     /**
      * Use the provided listener object to send messages to the server.
+     *
      * @param l: the listener used to send messages.
      */
     public void setClientMessageListener(ClientMessageListener l){
