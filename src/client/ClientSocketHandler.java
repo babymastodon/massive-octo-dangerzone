@@ -1,8 +1,6 @@
 package client;
 
 import java.util.*;
-import java.io.*;
-
 import common.*;
 import static common.SocketState.*;
 

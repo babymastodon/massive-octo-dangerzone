@@ -17,7 +17,11 @@ import common.Whiteboard;
  *      should only be modified from the Swing event loop.
  */
 public class BoardCanvas extends JPanel{
-    private BufferedImage drawingBuffer;
+    /**
+	 * auto-generated UID
+	 */
+	private static final long serialVersionUID = -7345935714419608763L;
+	private BufferedImage drawingBuffer;
     
     /**
      * Construct a JPanel with the same width and height

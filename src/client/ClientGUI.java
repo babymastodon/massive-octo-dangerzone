@@ -401,7 +401,7 @@ public class ClientGUI implements ServerMessageListener{
             lastX = e.getX();
             lastY = e.getY();
 
-            Point thisPoint = new Point(lastX, board.HEIGHT-lastY);
+            Point thisPoint = new Point(lastX, Whiteboard.HEIGHT-lastY);
 
             drawLine(thisPoint, thisPoint);
         }
@@ -414,8 +414,8 @@ public class ClientGUI implements ServerMessageListener{
             int x = e.getX();
             int y = e.getY();
             
-            Point lastPoint = new Point(lastX, board.HEIGHT-lastY);
-            Point thisPoint = new Point(x, board.HEIGHT-y);
+            Point lastPoint = new Point(lastX, Whiteboard.HEIGHT-lastY);
+            Point thisPoint = new Point(x, Whiteboard.HEIGHT-y);
 
             drawLine(lastPoint, thisPoint);
 

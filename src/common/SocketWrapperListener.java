@@ -1,7 +1,5 @@
 package common;
 
-import java.io.*;
-
 /**
  * Implements callback functions for the SocketWrapper.
  *
