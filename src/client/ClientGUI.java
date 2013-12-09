@@ -95,8 +95,11 @@ public class ClientGUI implements ServerMessageListener{
 				
 				
 				//TODO String users should be concatenated with users info. 
-				String Users;
-				JLabel users=new JLabel("Current Users: ");
+				String UserStrings = null;
+				for (String user:users){
+					UserStrings+=user;
+				}
+				JLabel users=new JLabel("Current Users: "+UserStrings);
 				JLabel colorInstr=new JLabel("Choose your color");
 
 
