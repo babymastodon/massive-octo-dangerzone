@@ -1,5 +1,7 @@
 package client;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.JPanel;
@@ -10,7 +12,8 @@ public class BoardCanvas extends JPanel{
     private Image drawingBuffer;
     
     public BoardCanvas(){
-        super(Whiteboard.WIDTH, Whiteboard.HEIGHT);
+        super();
+        this.setPreferredSize(new Dimension(Whiteboard.WIDTH, Whiteboard.HEIGHT));
     }
     
     public void setDrawingBuffer(Image newBuffer){

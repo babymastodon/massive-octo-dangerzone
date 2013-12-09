@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +45,10 @@ public class ClientGUI implements ServerMessageListener{
     private String username;
     private JFrame loginWindow;
     private JFrame connectWindow;
+    private JFrame canvasWindow;
+
     private ClientMessageListener cmListener;
+
     private BoardCanvas canvas;
     private JLabel usersLabel;
     private JLabel boardIDLabel;
@@ -52,18 +56,19 @@ public class ClientGUI implements ServerMessageListener{
     private ArrayList<String> users = new ArrayList<String>();
     private Whiteboard board;
     private int boardID;
-    private JLabel usersLabel;
+
+    // TODO: add pen size and color variables
     // ---- end section --------
 
     // ---- begin section ------
     // Constants for the user interface.
-    WHITE = new Color(255,255,255);
-    BLACK = new Color(0,0,0);
-    RED = new Color(230,20,20);
-    BLUE = new Color(20,20,230);
-    GREEN = new Color(20,230,20);
-    ERASER_WIDTH = 10;
-    PEN_WIDTH = 5;
+    private static final Color WHITE = new Color(255,255,255);
+    private static final Color BLACK = new Color(0,0,0);
+    private static final Color RED = new Color(230,20,20);
+    private static final Color BLUE = new Color(20,20,230);
+    private static final Color GREEN = new Color(20,230,20);
+    private static int ERASER_WIDTH = 10;
+    private static int PEN_WIDTH = 5;
     // ---- end section --------
     
 
@@ -74,6 +79,7 @@ public class ClientGUI implements ServerMessageListener{
     public ClientGUI(){
         createLoginScreen();
         createConnectScreen();
+        createCanvasScreen();
     }
     
     /**
@@ -99,10 +105,6 @@ public class ClientGUI implements ServerMessageListener{
 
     @Override
     public void loginSuccess() {
-        synchronized (this){
-            // TODO: maybe this is not necessary
-            this.loggedIn = true;
-        }
         hideLoginScreen();
         showConnectScreen();
     }
@@ -125,10 +127,13 @@ public class ClientGUI implements ServerMessageListener{
     @Override
     public void connectToBoardSuccess(int id, List<String> users,
             Whiteboard data) {
-        // TODO change gui to see the board.
         this.users = new ArrayList<String>(users);
         this.board = data;
         this.boardID = id;
+
+        hideConnectScreen();
+        showCanvasScreen();
+        refreshCanvasElements();
     }
 
     @Override
@@ -258,8 +263,7 @@ public class ClientGUI implements ServerMessageListener{
     private void createCanvasScreen(){
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                loginWindow = new JFrame("Login Page");
-                JFrame canvasWindow = new JFrame("Whiteboard");
+                canvasWindow = new JFrame("Whiteboard");
 
                 // Left-hand box contains the canvas and list of connected users
                 JPanel canvasWithUsers = new JPanel();
@@ -268,10 +272,10 @@ public class ClientGUI implements ServerMessageListener{
 
                 canvasWithUsers.setLayout(new BoxLayout(canvasWithUsers, BoxLayout.Y_AXIS));
                 canvasWithUsers.add(canvas);
-                canvasWithUsers.add(users);
+                canvasWithUsers.add(usersLabel);
 
                 // Right-hand box contains the buttons, and the board id
-                JPanel drawAndErase=new JPanel();
+                JPanel drawAndErase = new JPanel();
                 boardIDLabel = new JLabel();
                 JLabel colorInstr = new JLabel("Choose your color");
                 JButton eraseButton = makeButton("ERASE", WHITE, ERASER_WIDTH);
@@ -279,7 +283,7 @@ public class ClientGUI implements ServerMessageListener{
                 JButton redButton = makeButton("RED", RED, PEN_WIDTH);
                 JButton blueButton = makeButton("BLUE", BLUE, PEN_WIDTH);
                 JButton greenButton = makeButton("GREEN", GREEN, PEN_WIDTH);
-                JButton exitButton = makeExitButton("GREEN", GREEN, PEN_WIDTH);
+                JButton exitButton = makeExitButton();
 
                 drawAndErase.setLayout(new BoxLayout(drawAndErase, BoxLayout.Y_AXIS));
                 drawAndErase.add(colorInstr);
@@ -295,9 +299,11 @@ public class ClientGUI implements ServerMessageListener{
                 canvasWindow.add(canvasWithUsers);
                 canvasWindow.add(drawAndErase);
 
-                loginWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                loginWindow.pack();
-                loginWindow.setMinimumSize(loginWindow.getSize());
+                // TODO: add the mouse listener and mouseMotionListener here
+
+                canvasWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                canvasWindow.pack();
+                canvasWindow.setMinimumSize(canvasWindow.getSize());
             }
         });
     }
@@ -315,8 +321,8 @@ public class ClientGUI implements ServerMessageListener{
     }
 
     private JButton makeExitButton(){
-        JButton btn = new JButton(label);
-        btn.setName(label);
+        JButton btn = new JButton("EXIT");
+        btn.setName("EXIT");
         btn.setPreferredSize(new Dimension (100,100));
         btn.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent e) {
@@ -338,6 +344,28 @@ public class ClientGUI implements ServerMessageListener{
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 canvasWindow.setVisible(false);
+            }
+        });
+    }
+
+    private void refreshCanvasElements(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                // show the connected users
+                StringBuilder ub = new StringBuilder();
+                ub.append("Connected users: ");
+                for (String username: users){
+                    ub.append(username).append(" ");
+                }
+                usersLabel.setText(ub.toString());
+
+                // show the current board id
+                boardIDLabel.setText("Board ID: " + boardID);
+
+                // update the image shown in the canvas
+                BufferedImage buff = board.makeBuffer();
+                board.copyPixelData(buff);
+                canvas.setDrawingBuffer(buff);
             }
         });
     }
