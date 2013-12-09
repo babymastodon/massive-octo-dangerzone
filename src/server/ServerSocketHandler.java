@@ -64,13 +64,13 @@ public class ServerSocketHandler implements ServerMessageListener{
             public void onReadLine(String line){
                 _onReadLine(line);
             }
-            public void onReadError(IOException e){
+            public void onReadError(Exception e){
                 // do nothing, since onReadFinish will get called
             }
             public void onReadFinish(){
                 _clientClose();
             }
-            public void onWriteError(IOException e){
+            public void onWriteError(Exception e){
                 serverClose();
             }
         });

@@ -44,7 +44,9 @@ public class ClientGUI implements ServerMessageListener{
     // ---- begin section ------
     // variables in this section should not be accessed without
     // locking the ClientGUI object
-    // TODO: add variables here
+    private ArrayList<String> users = new ArrayList<String>();
+    private Whiteboard board;
+    private int boardID;
     // ---- end section --------
     
     // ---- begin section ------
@@ -60,10 +62,6 @@ public class ClientGUI implements ServerMessageListener{
     private BoardCanvas canvas;
     private JLabel usersLabel;
     private JLabel boardIDLabel;
-
-    private ArrayList<String> users = new ArrayList<String>();
-    private Whiteboard board;
-    private int boardID;
 
     // TODO: add pen size and color variables
     // ---- end section --------
@@ -135,9 +133,11 @@ public class ClientGUI implements ServerMessageListener{
     @Override
     public void connectToBoardSuccess(int id, List<String> users,
             Whiteboard data) {
-        this.users = new ArrayList<String>(users);
-        this.board = data;
-        this.boardID = id;
+        synchronized(this){
+            this.users = new ArrayList<String>(users);
+            this.board = data;
+            this.boardID = id;
+        }
 
         hideConnectScreen();
         showCanvasScreen();
@@ -146,19 +146,29 @@ public class ClientGUI implements ServerMessageListener{
 
     @Override
     public void updatePixel(Point point, Color color) {
-        this.board.setPixel(point, color);
+        synchronized(this){
+            this.board.setPixel(point, color);
+        }
+        refreshCanvasElements();
     }
 
     @Override
     public void updateUsers(List<String> users) {
-        this.users = new ArrayList<String>(users);
+        synchronized(this){
+            this.users = new ArrayList<String>(users);
+        }
+        refreshCanvasElements();
     }
 
     @Override
     public void disconnectFromBoardSuccess() {
-        this.board = null;
-        this.boardID = -1;
-        this.users = new ArrayList<String>();
+        synchronized(this){
+            this.board = null;
+            this.boardID = -1;
+            this.users = new ArrayList<String>();
+        }
+        hideCanvasScreen();
+        showConnectScreen();
     }
 
     @Override
@@ -168,6 +178,7 @@ public class ClientGUI implements ServerMessageListener{
         this.users = new ArrayList<String>();
 
         cmListener.clientClose();
+        System.exit(0);
     }
 
     private void createLoginScreen(){
@@ -294,6 +305,7 @@ public class ClientGUI implements ServerMessageListener{
                 JButton exitButton = makeExitButton();
 
                 drawAndErase.setLayout(new BoxLayout(drawAndErase, BoxLayout.Y_AXIS));
+                drawAndErase.add(boardIDLabel);
                 drawAndErase.add(colorInstr);
                 drawAndErase.add(blackButton);
                 drawAndErase.add(redButton);
@@ -371,9 +383,7 @@ public class ClientGUI implements ServerMessageListener{
                 boardIDLabel.setText("Board ID: " + boardID);
 
                 // update the image shown in the canvas
-                BufferedImage buff = board.makeBuffer();
-                board.copyPixelData(buff);
-                canvas.setDrawingBuffer(buff);
+                board.copyPixelData(canvas.getDrawingBuffer());
             }
         });
     }
